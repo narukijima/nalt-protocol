@@ -1,7 +1,7 @@
 {
-  "name": "personal-protocol-validator",
-  "version": "1.0.0",
-  "description": "A validator for the Personal Protocol specification.",
+  "name": "personal-data-protocol-validator",
+  "version": "1.1.0",
+  "description": "A validator for the Personal Data Protocol (PDP) specification.",
   "main": "validator.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

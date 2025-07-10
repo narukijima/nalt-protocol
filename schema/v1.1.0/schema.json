@@ -1,0 +1,236 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "personal-data-protocol/v1.1.0",
+  "description": "Schema for Personal Data Protocol (PDP) v1.1.0",
+  "type": "object",
+  "required": [
+    "spec_version",
+    "document_id",
+    "date",
+    "meta",
+    "entries"
+  ],
+  "properties": {
+    "spec_version": {
+      "description": "Identifier for the specification name and version.",
+      "type": "string",
+      "pattern": "^personal-data-protocol/1\\.1\\.0$"
+    },
+    "document_id": {
+      "description": "A globally unique identifier for the document (UUIDv4 required).",
+      "type": "string",
+      "format": "uuid"
+    },
+    "date": {
+      "description": "The date the entries belong to, in YYYY-MM-DD format.",
+      "type": "string",
+      "format": "date",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "timestamp": {
+      "description": "The timestamp when the document was created or last modified (ISO 8601 format, strongly recommended).",
+      "type": "string",
+      "format": "date-time"
+    },
+    "meta": {
+      "$ref": "#/$defs/metaObject"
+    },
+    "entries": {
+      "description": "An array of one or more Entry objects.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/entryObject"
+      }
+    },
+    "signature": {
+      "description": "Digital signature for data integrity.",
+      "$ref": "#/$defs/signatureObject"
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "metaObject": {
+      "type": "object",
+      "required": [
+        "language",
+        "timezone"
+      ],
+      "properties": {
+        "language": {
+          "description": "The default language of the document (ISO 639-1 code).",
+          "type": "string",
+          "pattern": "^[a-z]{2}$"
+        },
+        "timezone": {
+          "description": "The IANA timezone database name.",
+          "type": "string"
+        },
+        "x_utc_offset_minutes": {
+          "description": "UTC offset in minutes for performance optimization.",
+          "type": "integer"
+        }
+      },
+      "patternProperties": {
+        "^x_": {}
+      },
+      "additionalProperties": false
+    },
+    "entryObject": {
+      "type": "object",
+      "required": [
+        "entry_id",
+        "type",
+        "mode",
+        "content_format",
+        "content"
+      ],
+      "properties": {
+        "entry_id": {
+          "description": "A unique identifier for the entry (UUIDv4 recommended).",
+          "type": "string"
+        },
+        "type": {
+          "description": "The type of content the entry represents.",
+          "type": "string",
+          "enum": [
+            "event",
+            "reflection",
+            "task",
+            "idea",
+            "log"
+          ]
+        },
+        "mode": {
+          "description": "The time of day the entry belongs to.",
+          "type": "string",
+          "enum": [
+            "morning",
+            "afternoon",
+            "evening",
+            "night",
+            "none"
+          ]
+        },
+        "content_format": {
+          "description": "The format of the content string (MIME type).",
+          "type": "string",
+          "enum": [
+            "text/plain",
+            "text/markdown",
+            "text/html",
+            "application/json",
+            "text/org"
+          ]
+        },
+        "content": {
+          "description": "The original, unmodified user-provided text.",
+          "type": "string"
+        },
+        "end_date": {
+          "description": "End date for entries spanning multiple days.",
+          "type": "string",
+          "format": "date",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "summary": {
+          "description": "A brief, AI-generated summary of the content.",
+          "type": "string",
+          "maxLength": 140
+        },
+        "moods": {
+          "description": "An array of mood objects.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/moodObject"
+          }
+        },
+        "tags": {
+          "description": "An array of snake_case tags.",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 6,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          }
+        },
+        "entities": {
+          "$ref": "#/$defs/entitiesObject"
+        },
+        "x_due_date": {
+            "description": "Due date for a task entry.",
+            "type": "string",
+            "format": "date"
+        },
+        "x_relations": {
+            "description": "Relationships to other entries.",
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/relationObject"
+            }
+        }
+      },
+      "patternProperties": {
+        "^x_": {}
+      },
+      "additionalProperties": false
+    },
+    "moodObject": {
+      "type": "object",
+      "required": ["type", "intensity"],
+      "properties": {
+        "type": { 
+          "type": "string",
+          "enum": ["happy", "excited", "peaceful", "content", "grateful", "sad", "angry", "anxious", "frustrated", "tired", "confused", "lonely", "calm", "neutral", "curious", "nostalgic", "surprised", "hopeful", "proud", "motivated"]
+        },
+        "intensity": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "multipleOf": 0.01
+        }
+      }
+    },
+    "entitiesObject": {
+      "type": "object",
+      "properties": {
+        "people": { "type": "array", "items": { "type": "string" } },
+        "locations": { "type": "array", "items": { "type": "string" } },
+        "organizations": { "type": "array", "items": { "type": "string" } },
+        "products": { "type": "array", "items": { "type": "string" } },
+        "media": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "relationObject": {
+        "type": "object",
+        "required": ["type", "target_id"],
+        "properties": {
+            "type": {
+                "type": "string",
+                "enum": ["caused_by", "led_to", "related_to", "explains", "contradicts"]
+            },
+            "target_id": { "type": "string" }
+        }
+    },
+    "signatureObject": {
+      "type": "object",
+      "required": ["alg", "sig", "public_key"],
+      "properties": {
+        "alg": {
+          "description": "Signature algorithm.",
+          "type": "string",
+          "enum": ["EdDSA", "ES256", "RS256"]
+        },
+        "sig": {
+          "description": "Base64URL encoded signature.",
+          "type": "string"
+        },
+        "public_key": {
+          "description": "Public key identifier (e.g., DID).",
+          "type": "string"
+        }
+      }
+    }
+  }
+}
