@@ -1,7 +1,7 @@
 {
-  "name": "persona-protocol-validator",
+  "name": "personal-protocol-validator",
   "version": "1.0.0",
-  "description": "A validator for the Persona Protocol specification.",
+  "description": "A validator for the Personal Protocol specification.",
   "main": "validator.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

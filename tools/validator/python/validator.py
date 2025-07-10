@@ -3,9 +3,9 @@ import jsonschema
 import sys
 import os
 
-def validate_persona_protocol(file_path):
+def validate_personal_protocol(file_path):
     """
-    Validates a JSON file against the Persona Protocol v1.0.0 schema.
+    Validates a JSON file against the Personal Protocol v1.0.0 schema.
     """
     # Construct the absolute path to the schema file
     script_dir = os.path.dirname(__file__)
@@ -30,7 +30,7 @@ def validate_persona_protocol(file_path):
 
     try:
         jsonschema.validate(instance=instance, schema=schema)
-        print(f"✅ Validation successful: '{file_path}' conforms to Persona Protocol v1.0.0.")
+        print(f"✅ Validation successful: '{file_path}' conforms to Personal Protocol v1.0.0.")
     except jsonschema.exceptions.ValidationError as err:
         print(f"❌ Validation failed: '{file_path}' does not conform to the schema.")
         print("Error details:")
@@ -44,4 +44,4 @@ if __name__ == "__main__":
         sys.exit(1)
     
     file_to_validate = sys.argv[1]
-    validate_persona_protocol(file_to_validate)
+    validate_personal_protocol(file_to_validate)
