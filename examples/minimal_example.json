@@ -1,17 +1,19 @@
 {
-  "spec_version": "personal-data-protocol/1.0.0",
+  "spec_version": "personal-data-protocol/1.1.0",
   "document_id": "a1b2c3d4-e5f6-4a1b-9c8d-7e6f5a4b3c2d",
   "date": "2025-07-09",
+  "timestamp": "2025-07-09T18:00:00Z",
   "meta": {
     "language": "en",
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "x_utc_offset_minutes": -240
   },
   "entries": [
     {
       "entry_id": "20250709T180000Z-ref",
       "type": "reflection",
       "mode": "evening",
-      "content_format": "plain_text",
+      "content_format": "text/plain",
       "content": "It was a fulfilling day."
     }
   ]

@@ -1,10 +1,12 @@
 {
-  "spec_version": "personal-data-protocol/1.0.0",
+  "spec_version": "personal-data-protocol/1.1.0",
   "document_id": "a1b2c3d4-e5f6-4a1b-9c8d-7e6f5a4b3c2d",
   "date": "2025-07-09",
+  "timestamp": "2025-07-09T21:30:00Z",
   "meta": {
     "language": "en",
     "timezone": "America/New_York",
+    "x_utc_offset_minutes": -240,
     "x_processed_by": {
       "agent": "gemini-persona-engine/1.0",
       "timestamp": "2025-07-09T21:30:00Z"
@@ -15,12 +17,12 @@
       "entry_id": "e1f2g3h4-a1b2-4c3d-8e9f-a0b1c2d3e4f5",
       "type": "reflection",
       "mode": "morning",
-      "content_format": "plain_text",
+      "content_format": "text/plain",
       "content": "Today's economics class was complex, but I managed to understand it. I'm a bit worried about next week's report.",
       "summary": "Understood the morning economics class but feeling anxious about next week's report.",
       "moods": [
-        { "type": "confused", "intensity": 0.4 },
-        { "type": "anxious", "intensity": 0.5 }
+        { "type": "confused", "intensity": 0.40 },
+        { "type": "anxious", "intensity": 0.50 }
       ],
       "tags": ["university", "study", "economics", "report"]
     },
@@ -28,10 +30,10 @@
       "entry_id": "f5g6h7i8-b2c3-4d4e-9f0a-b1c2d3e4f5g6",
       "type": "task",
       "mode": "morning",
-      "content_format": "plain_text",
+      "content_format": "text/plain",
       "content": "Economics report assignment (due Friday)",
       "summary": "Submit economics report by Friday.",
-      "moods": [{ "type": "neutral", "intensity": 1.0 }],
+      "moods": [{ "type": "calm", "intensity": 1.00 }],
       "tags": ["task", "deadline"],
       "x_relations": [
         { "type": "caused_by", "target_id": "e1f2g3h4-a1b2-4c3d-8e9f-a0b1c2d3e4f5" }
@@ -42,12 +44,12 @@
       "entry_id": "g7h8i9j0-c3d4-4e5f-a0b1-c2d3e4f5g6h7",
       "type": "event",
       "mode": "afternoon",
-      "content_format": "plain_text",
+      "content_format": "text/plain",
       "content": "Had lunch at the cafeteria with my friends Ken and Aya. We had curry and got excited talking about summer vacation plans, endlessly debating whether to go to the beach or the mountains.",
       "summary": "Had lunch with friends at the cafeteria and discussed summer vacation plans.",
       "moods": [
-        { "type": "happy", "intensity": 0.9 },
-        { "type": "excited", "intensity": 0.8 }
+        { "type": "happy", "intensity": 0.90 },
+        { "type": "excited", "intensity": 0.80 }
       ],
       "tags": ["friends", "lunch", "social", "vacation_planning"],
       "entities": { "people": ["Ken", "Aya"] }
@@ -56,12 +58,12 @@
       "entry_id": "h8i9j0k1-d4e5-4f6g-b1c2-d3e4f5g6h7i8",
       "type": "event",
       "mode": "evening",
-      "content_format": "plain_text",
+      "content_format": "text/plain",
       "content": "Started my shift at the convenience store near the station. Our regular customer Mr. Suzuki came in and said, 'You're always working hard!' It was a small thing, but it made me so happy that all my fatigue disappeared.",
       "summary": "Received encouraging words from a regular customer during my convenience store shift, which made me feel happy.",
       "moods": [
-        { "type": "grateful", "intensity": 0.9 },
-        { "type": "happy", "intensity": 0.8 }
+        { "type": "happy", "intensity": 0.90 },
+        { "type": "excited", "intensity": 0.80 }
       ],
       "tags": ["part_time_job", "work", "communication", "motivation"],
       "entities": { "people": ["Mr. Suzuki"] }

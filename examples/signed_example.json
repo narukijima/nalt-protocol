@@ -1,0 +1,51 @@
+{
+  "spec_version": "personal-data-protocol/1.1.0",
+  "document_id": "07fdf576-19f8-4a2b-b986-53d77f2315fa",
+  "date": "2025-07-10",
+  "end_date": "2025-07-12",
+  "timestamp": "2025-07-10T09:00:00Z",
+  "meta": {
+    "language": "en",
+    "timezone": "Asia/Tokyo",
+    "x_utc_offset_minutes": 540
+  },
+  "entries": [
+    {
+      "entry_id": "a3b4c5d6-e7f8-4a1b-9c2d-3e4f5a6b7c8d",
+      "type": "event",
+      "mode": "morning",
+      "content_format": "text/markdown",
+      "content": "Started a 3-day workshop on **Personal Data Ownership** at Tokyo Conference Center. Met interesting people from various backgrounds - developers, privacy advocates, and data scientists.",
+      "summary": "Began 3-day workshop on personal data ownership with diverse attendees.",
+      "moods": [
+        { "type": "excited", "intensity": 0.85 },
+        { "type": "curious", "intensity": 0.90 }
+      ],
+      "tags": ["workshop", "privacy", "networking", "tokyo"],
+      "entities": {
+        "locations": ["Tokyo Conference Center"],
+        "organizations": ["Personal Data Foundation"]
+      }
+    },
+    {
+      "entry_id": "b4c5d6e7-f8a9-4b2c-a3d4-4e5f6a7b8c9d",
+      "type": "idea",
+      "mode": "afternoon",
+      "content_format": "text/plain",
+      "content": "What if we could create a decentralized personal data vault where individuals have complete control over their data sharing permissions using DID and verifiable credentials?",
+      "summary": "Idea for decentralized personal data vault with DID-based access control.",
+      "moods": [
+        { "type": "excited", "intensity": 0.95 }
+      ],
+      "tags": ["decentralization", "privacy", "did", "innovation"],
+      "x_relations": [
+        { "type": "caused_by", "target_id": "a3b4c5d6-e7f8-4a1b-9c2d-3e4f5a6b7c8d" }
+      ]
+    }
+  ],
+  "signature": {
+    "alg": "EdDSA",
+    "sig": "eyJhbGciOiJFZERTQSJ9.eyJkb2N1bWVudF9pZCI6IjA3ZmRmNTc2LTE5ZjgtNGEyYi1iOTg2LTUzZDc3ZjIzMTVmYSIsImRhdGUiOiIyMDI1LTA3LTEwIiwidGltZXN0YW1wIjoiMjAyNS0wNy0xMFQwOTowMDowMFoifQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+    "public_key": "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK"
+  }
+}
