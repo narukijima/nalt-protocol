@@ -3,7 +3,7 @@ const path = require('path');
 const Ajv = require('ajv');
 const addFormats = require('ajv-formats');
 
-function validatePersonalProtocol(filePath) {
+function validatePersonalDataProtocol(filePath) {
   const schemaPath = path.join(__dirname, '../../../schema/v1.0.0/schema.json');
 
   let schema, instance;
@@ -29,7 +29,7 @@ function validatePersonalProtocol(filePath) {
   const valid = validate(instance);
 
   if (valid) {
-    console.log(`✅ Validation successful: '${filePath}' conforms to Personal Protocol v1.0.0.`);
+    console.log(`✅ Validation successful: '${filePath}' conforms to Personal Data Protocol (PDP) v1.0.0.`);
   } else {
     console.error(`❌ Validation failed: '${filePath}' does not conform to the schema.`);
     console.error("Error details:", validate.errors);
@@ -44,5 +44,5 @@ if (require.main === module) {
     process.exit(1);
   }
   const fileToValidate = args[0];
-  validatePersonalProtocol(fileToValidate);
+  validatePersonalDataProtocol(fileToValidate);
 }
