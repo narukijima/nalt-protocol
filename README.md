@@ -20,7 +20,7 @@ Here's a minimal example of the NALT Protocol structure:
 
 ```json
 {
-  "spec_version": "personal-data-protocol/1.1.0",
+  "spec_version": "nalt-protocol/1.1.0",
   "document_id": "550e8400-e29b-41d4-a716-446655440000",
   "date": "2025-07-09",
   "meta": {

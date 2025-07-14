@@ -104,7 +104,7 @@ def migrate_nalt_v1_0_to_v1_1(old_data):
     """Migrate NALT Protocol data from v1.0.0 to v1.1.0"""
     
     # Update spec version
-    old_data['spec_version'] = 'personal-data-protocol/1.1.0'
+    old_data['spec_version'] = 'nalt-protocol/1.1.0'
     
     # Add document_id if missing
     if 'document_id' not in old_data:
@@ -162,7 +162,7 @@ node tools/validator/nodejs/validator.js migrated_data.json
 
 If you need to rollback to v1.0.0:
 
-1. Change `spec_version` back to `personal-data-protocol/1.0.0`
+1. Change `spec_version` back to `nalt-protocol/1.0.0`
 2. Remove `end_date` fields if present
 3. Remove `signature` objects if present
 4. `document_id` can remain (it was recommended in v1.0.0)
