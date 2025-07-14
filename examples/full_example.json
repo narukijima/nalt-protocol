@@ -1,5 +1,5 @@
 {
-  "spec_version": "personal-data-protocol/1.1.0",
+  "spec_version": "nalt-protocol/1.1.0",
   "document_id": "a1b2c3d4-e5f6-4a1b-9c8d-7e6f5a4b3c2d",
   "date": "2025-07-09",
   "timestamp": "2025-07-09T21:30:00Z",
@@ -8,7 +8,7 @@
     "timezone": "America/New_York",
     "x_utc_offset_minutes": -240,
     "x_processed_by": {
-      "agent": "gemini-persona-engine/1.0",
+      "agent": "gemini-nalt-engine/1.0",
       "timestamp": "2025-07-09T21:30:00Z"
     }
   },

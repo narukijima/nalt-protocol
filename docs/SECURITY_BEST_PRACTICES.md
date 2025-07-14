@@ -1,6 +1,6 @@
-# Security Best Practices for Personal Data Protocol (PDP)
+# Security Best Practices for NALT Protocol
 
-This guide provides security recommendations for implementing and using PDP v1.1.0.
+This guide provides security recommendations for implementing and using NALT Protocol v1.1.0.
 
 ## 1. Data Classification and Sensitivity Levels
 
@@ -39,7 +39,7 @@ Before storing personal data, classify it by sensitivity:
 const { Ed25519VerificationKey2020 } = require('@digitalbazaar/ed25519-verification-key-2020');
 const { sign } = require('@digitalbazaar/ed25519-signature-2020');
 
-async function signPDPDocument(document, privateKey) {
+async function signNALTDocument(document, privateKey) {
   // Create canonical representation
   const payload = {
     document_id: document.document_id,
@@ -158,7 +158,7 @@ function encryptEntry(entry, key) {
 ## 7. Secure Transmission
 
 ### API Security
-When building APIs for PDP data:
+When building APIs for NALT Protocol data:
 
 ```javascript
 // Example: Secure API endpoint
@@ -173,9 +173,9 @@ app.post('/api/pdp/documents',
     }
     
     // Validate against schema
-    const isValid = await validatePDP(req.body);
+    const isValid = await validateNALT(req.body);
     if (!isValid) {
-      return res.status(400).json({ error: 'Invalid PDP format' });
+      return res.status(400).json({ error: 'Invalid NALT Protocol format' });
     }
     
     // Store securely
@@ -234,7 +234,7 @@ function analyzeMoods(entries) {
       "action": "read",
       "subject": "did:key:z6Mk...",
       "ip": "192.168.1.100",
-      "user_agent": "PDP-Client/1.0"
+      "user_agent": "NALT-Client/1.0"
     }
   ]
 }
@@ -271,8 +271,8 @@ function analyzeMoods(entries) {
 ```javascript
 // Example: GDPR-compliant deletion
 async function deleteUserData(userId) {
-  // Delete all PDP documents
-  await deletePDPDocuments(userId);
+  // Delete all NALT Protocol documents
+  await deleteNALTDocuments(userId);
   
   // Delete from backups (mark for deletion)
   await markBackupsForDeletion(userId);

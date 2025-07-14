@@ -1,7 +1,7 @@
 {
-  "name": "personal-data-protocol-validator",
+  "name": "nalt-protocol-validator",
   "version": "1.1.0",
-  "description": "A validator for the Personal Data Protocol (PDP) specification.",
+  "description": "A validator for the NALT Protocol specification.",
   "main": "validator.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

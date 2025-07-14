@@ -1,6 +1,6 @@
-# Performance Optimization Guide for PDP v1.1.0
+# Performance Optimization Guide for NALT Protocol v1.1.0
 
-This guide provides strategies for optimizing performance when working with Personal Data Protocol documents.
+This guide provides strategies for optimizing performance when working with NALT Protocol documents.
 
 ## 1. UTC Offset Optimization (New in v1.1.0)
 
@@ -59,7 +59,7 @@ function addUTCOffset(document) {
 
 ### Batch Processing Strategy
 ```javascript
-class PDPProcessor {
+class NALTProcessor {
   constructor(options = {}) {
     this.batchSize = options.batchSize || 100;
     this.maxEntrySize = options.maxEntrySize || 400; // characters
@@ -129,7 +129,7 @@ class PDPProcessor {
 
 ### Create Searchable Indices
 ```javascript
-class PDPIndexer {
+class NALTIndexer {
   constructor() {
     this.indices = {
       byDate: new Map(),
@@ -231,7 +231,7 @@ class PDPIndexer {
 ```javascript
 const { Transform } = require('stream');
 
-class PDPStreamProcessor extends Transform {
+class NALTStreamProcessor extends Transform {
   constructor(options) {
     super({ objectMode: true });
     this.buffer = '';
@@ -316,7 +316,7 @@ class PDPStreamProcessor extends Transform {
 
 ### Multi-Level Cache Implementation
 ```javascript
-class PDPCache {
+class NALTCache {
   constructor() {
     // L1: Memory cache (hot data)
     this.memoryCache = new Map();
@@ -411,7 +411,7 @@ class PDPCache {
 
 ### Optimized Bulk Processing
 ```javascript
-class PDPBulkOperations {
+class NALTBulkOperations {
   async validateBatch(documents, options = {}) {
     const { parallel = 4, failFast = false } = options;
     
@@ -465,7 +465,7 @@ class PDPBulkOperations {
 
 ### Built-in Performance Metrics
 ```javascript
-class PDPPerformanceMonitor {
+class NALTPerformanceMonitor {
   constructor() {
     this.metrics = {
       operations: new Map(),
@@ -535,7 +535,7 @@ class PDPPerformanceMonitor {
 }
 
 // Usage example
-const monitor = new PDPPerformanceMonitor();
+const monitor = new NALTPerformanceMonitor();
 
 const validateDocument = monitor.measure('validation', async (doc) => {
   // Validation logic

@@ -5,9 +5,9 @@ import os
 import argparse
 from datetime import datetime
 
-def validate_personal_data_protocol(file_path, version='v1.1.0', check_strongly_recommended=True):
+def validate_nalt_protocol(file_path, version='v1.1.0', check_strongly_recommended=True):
     """
-    Validates a JSON file against the Personal Data Protocol (PDP) schema.
+    Validates a JSON file against the NALT Protocol schema.
     
     Args:
         file_path: Path to the JSON file to validate
@@ -37,7 +37,7 @@ def validate_personal_data_protocol(file_path, version='v1.1.0', check_strongly_
 
     try:
         jsonschema.validate(instance=instance, schema=schema)
-        print(f"✅ Validation successful: '{file_path}' conforms to Personal Data Protocol (PDP) {version}.")
+        print(f"✅ Validation successful: '{file_path}' conforms to NALT Protocol {version}.")
         
         # Check for strongly recommended fields
         if check_strongly_recommended and version == 'v1.1.0':
@@ -92,11 +92,11 @@ def check_dates_consistency(instance):
     return True, None
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Validate PDP JSON files')
+    parser = argparse.ArgumentParser(description='Validate NALT Protocol JSON files')
     parser.add_argument('file', help='Path to JSON file to validate')
     parser.add_argument('--version', default='v1.1.0', help='Schema version (default: v1.1.0)')
     parser.add_argument('--no-warnings', action='store_true', help='Disable strongly recommended field warnings')
     
     args = parser.parse_args()
     
-    validate_personal_data_protocol(args.file, args.version, not args.no_warnings)
+    validate_nalt_protocol(args.file, args.version, not args.no_warnings)

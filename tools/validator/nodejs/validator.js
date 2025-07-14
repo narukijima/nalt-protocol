@@ -3,7 +3,7 @@ const path = require('path');
 const Ajv = require('ajv');
 const addFormats = require('ajv-formats');
 
-function validatePersonalDataProtocol(filePath, version = 'v1.1.0', checkWarnings = true) {
+function validateNALTProtocol(filePath, version = 'v1.1.0', checkWarnings = true) {
   const schemaPath = path.join(__dirname, `../../../schema/${version}/schema.json`);
 
   let schema, instance;
@@ -29,7 +29,7 @@ function validatePersonalDataProtocol(filePath, version = 'v1.1.0', checkWarning
   const valid = validate(instance);
 
   if (valid) {
-    console.log(`✅ Validation successful: '${filePath}' conforms to Personal Data Protocol (PDP) ${version}.`);
+    console.log(`✅ Validation successful: '${filePath}' conforms to NALT Protocol ${version}.`);
     
     // Check for strongly recommended fields
     if (checkWarnings && version === 'v1.1.0') {
@@ -117,5 +117,5 @@ if (require.main === module) {
     }
   }
   
-  validatePersonalDataProtocol(filePath, version, checkWarnings);
+  validateNALTProtocol(filePath, version, checkWarnings);
 }

@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "personal-data-protocol/v1.0.0",
-  "description": "Schema for Personal Data Protocol (PDP) v1.0.0",
+  "title": "nalt-protocol/v1.0.0",
+  "description": "Schema for NALT Protocol v1.0.0",
   "type": "object",
   "required": [
     "spec_version",
@@ -13,7 +13,7 @@
     "spec_version": {
       "description": "Identifier for the specification name and version.",
       "type": "string",
-      "pattern": "^personal-data-protocol/1\\.0\\.0$"
+      "pattern": "^nalt-protocol/1\\.0\\.0$"
     },
     "document_id": {
       "description": "A globally unique identifier for the document (UUIDv4 recommended).",

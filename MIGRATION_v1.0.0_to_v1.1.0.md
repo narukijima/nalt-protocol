@@ -1,6 +1,6 @@
-# Migration Guide: PDP v1.0.0 to v1.1.0
+# Migration Guide: NALT Protocol v1.0.0 to v1.1.0
 
-This guide helps you migrate your Personal Data Protocol (PDP) data from v1.0.0 to v1.1.0.
+This guide helps you migrate your NALT Protocol data from v1.0.0 to v1.1.0.
 
 ## Breaking Changes
 
@@ -100,8 +100,8 @@ import json
 import uuid
 from datetime import datetime
 
-def migrate_pdp_v1_0_to_v1_1(old_data):
-    """Migrate PDP data from v1.0.0 to v1.1.0"""
+def migrate_nalt_v1_0_to_v1_1(old_data):
+    """Migrate NALT Protocol data from v1.0.0 to v1.1.0"""
     
     # Update spec version
     old_data['spec_version'] = 'personal-data-protocol/1.1.0'
@@ -140,7 +140,7 @@ def migrate_pdp_v1_0_to_v1_1(old_data):
 with open('old_data.json', 'r') as f:
     old_data = json.load(f)
 
-new_data = migrate_pdp_v1_0_to_v1_1(old_data)
+new_data = migrate_nalt_v1_0_to_v1_1(old_data)
 
 with open('migrated_data.json', 'w') as f:
     json.dump(new_data, f, indent=2, ensure_ascii=False)

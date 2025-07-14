@@ -1,9 +1,9 @@
 /**
- * DID/JWS Implementation Example for Personal Data Protocol (PDP) v1.1.0
+ * DID/JWS Implementation Example for NALT Protocol v1.1.0
  * 
  * This example demonstrates how to:
  * 1. Generate a DID (Decentralized Identifier)
- * 2. Sign PDP documents with JWS (JSON Web Signature)
+ * 2. Sign NALT Protocol documents with JWS (JSON Web Signature)
  * 3. Verify signatures
  */
 
@@ -13,7 +13,7 @@ const { base64url } = require('jose');
 // Example implementation - in production, use proper DID/JWS libraries
 // such as @digitalbazaar/ed25519-signature-2020 or jose
 
-class PDPSigner {
+class NALTSigner {
   constructor() {
     // Generate Ed25519 key pair
     const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519');
@@ -47,9 +47,9 @@ class PDPSigner {
   }
   
   /**
-   * Sign a PDP document
+   * Sign a NALT Protocol document
    */
-  async signDocument(pdpDocument) {
+  async signDocument(naltDocument) {
     // Create JWS header
     const header = {
       alg: 'EdDSA',
@@ -59,11 +59,11 @@ class PDPSigner {
     
     // Create payload with essential fields
     const payload = {
-      document_id: pdpDocument.document_id,
-      date: pdpDocument.date,
-      timestamp: pdpDocument.timestamp || new Date().toISOString(),
+      document_id: naltDocument.document_id,
+      date: naltDocument.date,
+      timestamp: naltDocument.timestamp || new Date().toISOString(),
       // Create a hash of entries for integrity
-      entries_hash: this.hashEntries(pdpDocument.entries)
+      entries_hash: this.hashEntries(naltDocument.entries)
     };
     
     // Encode header and payload
@@ -82,7 +82,7 @@ class PDPSigner {
     
     // Add signature to document
     return {
-      ...pdpDocument,
+      ...naltDocument,
       signature: {
         alg: 'EdDSA',
         sig: jws,
@@ -92,7 +92,7 @@ class PDPSigner {
   }
   
   /**
-   * Verify a signed PDP document
+   * Verify a signed NALT Protocol document
    */
   async verifyDocument(signedDocument) {
     if (!signedDocument.signature) {
@@ -164,12 +164,12 @@ class PDPSigner {
 // Example usage
 async function example() {
   // Create a signer
-  const signer = new PDPSigner();
+  const signer = new NALTSigner();
   console.log('Generated DID:', signer.did);
   
-  // Create a PDP document
-  const pdpDocument = {
-    spec_version: "personal-data-protocol/1.1.0",
+  // Create a NALT Protocol document
+  const naltDocument = {
+    spec_version: "nalt-protocol/1.1.0",
     document_id: "550e8400-e29b-41d4-a716-446655440000",
     date: "2025-07-10",
     timestamp: new Date().toISOString(),
@@ -192,7 +192,7 @@ async function example() {
   };
   
   // Sign the document
-  const signedDocument = await signer.signDocument(pdpDocument);
+  const signedDocument = await signer.signDocument(naltDocument);
   console.log('\nSigned document:');
   console.log(JSON.stringify(signedDocument, null, 2));
   
@@ -240,4 +240,4 @@ if (require.main === module) {
   example().catch(console.error);
 }
 
-module.exports = { PDPSigner };
+module.exports = { NALTSigner };
