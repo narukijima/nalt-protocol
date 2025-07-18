@@ -43,7 +43,7 @@ For more detailed specifications, please refer to:
 
 * [Full Specification (v1.1.0)](spec/v1.1.0.md)
 * [JSON Schema](schema/v1.1.0/schema.json)
-* [Migration Guide (v1.0.0 to v1.1.0)](MIGRATION_v1.0.0_to_v1.1.0.md)
+* [Migration Guide (v1.0.0 to v1.1.0)](docs/migration/v1.0.0_to_v1.1.0.md)
 * [Detailed Examples](examples/full_example.json)
 
 ## Validation

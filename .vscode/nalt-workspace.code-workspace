@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"name": "nalt",
+			"path": "../nalt"
+		},
+		{
+			"name": "nalt-protocol",
+			"path": "."
+		},
+		{
+			"name": "nalt-engine",
+			"path": "../nalt-engine"
+		},
+		{
+			"name": "nalt-gateway",
+			"path": "../nalt-gateway"
+		}
+	]
+}
