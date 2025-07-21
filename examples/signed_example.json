@@ -23,7 +23,9 @@
       "tags": ["workshop", "privacy", "networking", "tokyo"],
       "entities": {
         "locations": ["Tokyo Conference Center"],
-        "organizations": ["Personal Data Foundation"]
+        "organizations": ["Personal Data Foundation"],
+        "events": ["Personal Data Ownership Workshop"],
+        "concepts": ["data ownership", "privacy"]
       }
     },
     {
@@ -37,6 +39,10 @@
         { "type": "excited", "intensity": 0.95 }
       ],
       "tags": ["decentralization", "privacy", "did", "innovation"],
+      "entities": {
+        "technologies": ["DID", "verifiable credentials"],
+        "concepts": ["decentralized personal data vault", "data sovereignty"]
+      },
       "x_relations": [
         { "type": "caused_by", "target_id": "a3b4c5d6-e7f8-4a1b-9c2d-3e4f5a6b7c8d" }
       ]

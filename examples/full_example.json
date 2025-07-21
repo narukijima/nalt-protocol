@@ -52,7 +52,11 @@
         { "type": "excited", "intensity": 0.80 }
       ],
       "tags": ["friends", "lunch", "social", "vacation_planning"],
-      "entities": { "people": ["Ken", "Aya"] }
+      "entities": { 
+        "people": ["Ken", "Aya"],
+        "locations": ["cafeteria", "beach", "mountains"],
+        "food": ["curry"]
+      }
     },
     {
       "entry_id": "h8i9j0k1-d4e5-4f6g-b1c2-d3e4f5g6h7i8",
@@ -66,7 +70,11 @@
         { "type": "excited", "intensity": 0.80 }
       ],
       "tags": ["part_time_job", "work", "communication", "motivation"],
-      "entities": { "people": ["Mr. Suzuki"] }
+      "entities": { 
+        "people": ["Mr. Suzuki"],
+        "locations": ["convenience store", "station"],
+        "workplace": ["convenience store"]
+      }
     }
   ]
 }
