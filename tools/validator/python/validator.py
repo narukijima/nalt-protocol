@@ -67,14 +67,23 @@ def check_strongly_recommended_fields(instance):
                 if intensity != round(intensity, 2):
                     warnings.append(f"Mood intensity should use 0.01 precision (entry {i})")
     
-    # Check for recommended mood types
-    recommended_moods = {'happy', 'excited', 'calm', 'sad', 'angry', 'fearful', 'anxious', 'tired'}
+    # Check for valid mood types (v1.1.0 enforces 20 predefined types)
+    valid_moods = {
+        # Positive moods
+        'happy', 'excited', 'peaceful', 'content', 'grateful', 
+        'calm', 'hopeful', 'proud', 'motivated',
+        # Negative moods
+        'sad', 'angry', 'anxious', 'frustrated', 'tired', 
+        'confused', 'lonely',
+        # Neutral moods
+        'neutral', 'curious', 'nostalgic', 'surprised'
+    }
     for entry in instance.get('entries', []):
         if 'moods' in entry:
             for mood in entry['moods']:
                 mood_type = mood.get('type', '')
-                if mood_type and mood_type not in recommended_moods:
-                    warnings.append(f"Mood type '{mood_type}' is not in recommended list")
+                if mood_type and mood_type not in valid_moods:
+                    warnings.append(f"Mood type '{mood_type}' is not in the list of 20 predefined mood types")
                     break
     
     return warnings

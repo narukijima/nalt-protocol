@@ -107,8 +107,36 @@ interface Entry {
 }
 
 interface Mood {
-  type: string;      // Mood identifier
+  type: MoodType;    // One of 20 predefined mood types
   intensity: number; // 0.00-1.00, precision 0.01
+}
+
+enum MoodType {
+  // Positive moods
+  HAPPY = "happy",           // Joy from experiences or interactions
+  EXCITED = "excited",       // Strong anticipation or enthusiasm
+  PEACEFUL = "peaceful",     // Inner tranquility, calm, conflict-free state
+  CONTENT = "content",       // Satisfaction, fulfillment without additional needs
+  GRATEFUL = "grateful",     // Thankfulness for kindness or benefits received
+  CALM = "calm",            // Steady, composed, free of agitation
+  HOPEFUL = "hopeful",      // Expectation and trust in positive future outcomes
+  PROUD = "proud",          // Satisfaction from achievements by oneself or others
+  MOTIVATED = "motivated",  // Determination or eagerness toward future actions
+  
+  // Negative moods
+  SAD = "sad",             // Sense of loss, disappointment, melancholy
+  ANGRY = "angry",         // Irritation or anger toward unfairness or interference
+  ANXIOUS = "anxious",     // Worry, nervousness about future uncertainty
+  FRUSTRATED = "frustrated", // Irritation from obstacles to goals or desires
+  TIRED = "tired",         // Physical or mental fatigue
+  CONFUSED = "confused",   // Uncertainty, disorientation in unclear situations
+  LONELY = "lonely",       // Feeling isolated or disconnected from others
+  
+  // Neutral moods
+  NEUTRAL = "neutral",     // Regular, emotionally unbiased state
+  CURIOUS = "curious",     // Eager to know or understand more
+  NOSTALGIC = "nostalgic", // Sentimental or reflective emotions about the past
+  SURPRISED = "surprised"  // Unexpected reaction to unforeseen events or outcomes
 }
 
 interface Entities {
@@ -1767,18 +1795,31 @@ class NALTAIProcessor {
   }
 
   async detectMoods(content) {
+    const validMoodTypes = [
+      // Positive moods
+      'happy', 'excited', 'peaceful', 'content', 'grateful', 
+      'calm', 'hopeful', 'proud', 'motivated',
+      // Negative moods
+      'sad', 'angry', 'anxious', 'frustrated', 'tired', 
+      'confused', 'lonely',
+      // Neutral moods
+      'neutral', 'curious', 'nostalgic', 'surprised'
+    ];
+    
     const response = await this.aiService.complete({
-      prompt: `Analyze the emotional content of this diary entry. Return JSON array of moods with type and intensity (0-1).\n\nText: ${content}`,
+      prompt: `Analyze the emotional content of this diary entry. Return JSON array of moods with type (must be one of: ${validMoodTypes.join(', ')}) and intensity (0-1).\n\nText: ${content}`,
       format: 'json'
     });
     
     const moods = JSON.parse(response.text);
     
-    // Ensure proper intensity values
-    return moods.map(mood => ({
-      type: mood.type.toLowerCase().replace(/\s+/g, '_'),
-      intensity: Math.round(Math.max(0, Math.min(1, mood.intensity)) * 100) / 100
-    }));
+    // Validate and ensure proper mood types and intensity values
+    return moods
+      .filter(mood => validMoodTypes.includes(mood.type))
+      .map(mood => ({
+        type: mood.type,
+        intensity: Math.round(Math.max(0, Math.min(1, mood.intensity)) * 100) / 100
+      }));
   }
 
   async generateTags(entry) {

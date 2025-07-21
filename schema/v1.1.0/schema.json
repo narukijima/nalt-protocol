@@ -182,7 +182,8 @@
       "properties": {
         "type": { 
           "type": "string",
-          "enum": ["happy", "excited", "peaceful", "content", "grateful", "sad", "angry", "anxious", "frustrated", "tired", "confused", "lonely", "calm", "neutral", "curious", "nostalgic", "surprised", "hopeful", "proud", "motivated"]
+          "description": "Mood type categorized as positive, negative, or neutral",
+          "enum": ["happy", "excited", "peaceful", "content", "grateful", "calm", "hopeful", "proud", "motivated", "sad", "angry", "anxious", "frustrated", "tired", "confused", "lonely", "neutral", "curious", "nostalgic", "surprised"]
         },
         "intensity": {
           "type": "number",

@@ -66,16 +66,25 @@ function checkStronglyRecommendedFields(data) {
     });
   }
   
-  // Check for recommended mood types
-  const recommendedMoods = new Set(['happy', 'excited', 'calm', 'sad', 'angry', 'fearful', 'anxious', 'tired']);
+  // Check for valid mood types (v1.1.0 enforces 20 predefined types)
+  const validMoods = new Set([
+    // Positive moods
+    'happy', 'excited', 'peaceful', 'content', 'grateful', 
+    'calm', 'hopeful', 'proud', 'motivated',
+    // Negative moods
+    'sad', 'angry', 'anxious', 'frustrated', 'tired', 
+    'confused', 'lonely',
+    // Neutral moods
+    'neutral', 'curious', 'nostalgic', 'surprised'
+  ]);
   if (data.entries) {
-    let nonRecommendedFound = false;
+    let invalidMoodFound = false;
     data.entries.forEach(entry => {
-      if (entry.moods && !nonRecommendedFound) {
+      if (entry.moods && !invalidMoodFound) {
         entry.moods.forEach(mood => {
-          if (mood.type && !recommendedMoods.has(mood.type)) {
-            warnings.push(`Mood type '${mood.type}' is not in recommended list`);
-            nonRecommendedFound = true;
+          if (mood.type && !validMoods.has(mood.type)) {
+            warnings.push(`Mood type '${mood.type}' is not in the list of 20 predefined mood types`);
+            invalidMoodFound = true;
           }
         });
       }
