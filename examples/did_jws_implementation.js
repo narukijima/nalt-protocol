@@ -1,5 +1,5 @@
 /**
- * DID/JWS Implementation Example for NALT Protocol v1.1.0
+ * DID/JWS Implementation Example for NALT Protocol v1.1.1
  * 
  * This example demonstrates how to:
  * 1. Generate a DID (Decentralized Identifier)
@@ -61,7 +61,6 @@ class NALTSigner {
     const payload = {
       document_id: naltDocument.document_id,
       date: naltDocument.date,
-      timestamp: naltDocument.timestamp || new Date().toISOString(),
       // Create a hash of entries for integrity
       entries_hash: this.hashEntries(naltDocument.entries)
     };
@@ -135,7 +134,6 @@ class NALTSigner {
     return {
       valid: isValid,
       signer: public_key,
-      timestamp: payload.timestamp,
       document_id: payload.document_id
     };
   }
@@ -169,10 +167,9 @@ async function example() {
   
   // Create a NALT Protocol document
   const naltDocument = {
-    spec_version: "nalt-protocol/1.1.0",
+    spec_version: "nalt-protocol/1.1.1",
     document_id: "550e8400-e29b-41d4-a716-446655440000",
     date: "2025-07-10",
-    timestamp: new Date().toISOString(),
     meta: {
       language: "en",
       timezone: "UTC"

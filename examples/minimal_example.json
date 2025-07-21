@@ -1,8 +1,7 @@
 {
-  "spec_version": "nalt-protocol/1.1.0",
+  "spec_version": "nalt-protocol/1.1.1",
   "document_id": "a1b2c3d4-e5f6-4a1b-9c8d-7e6f5a4b3c2d",
   "date": "2025-07-09",
-  "timestamp": "2025-07-09T18:00:00Z",
   "meta": {
     "language": "en",
     "timezone": "America/New_York",

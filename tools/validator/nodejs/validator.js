@@ -3,7 +3,7 @@ const path = require('path');
 const Ajv = require('ajv');
 const addFormats = require('ajv-formats');
 
-function validateNALTProtocol(filePath, version = 'v1.1.0', checkWarnings = true) {
+function validateNALTProtocol(filePath, version = 'v1.1.1', checkWarnings = true) {
   const schemaPath = path.join(__dirname, `../../../schema/${version}/schema.json`);
 
   let schema, instance;
@@ -32,7 +32,7 @@ function validateNALTProtocol(filePath, version = 'v1.1.0', checkWarnings = true
     console.log(`✅ Validation successful: '${filePath}' conforms to NALT Protocol ${version}.`);
     
     // Check for strongly recommended fields
-    if (checkWarnings && version === 'v1.1.0') {
+    if (checkWarnings && (version === 'v1.1.0' || version === 'v1.1.1')) {
       const warnings = checkStronglyRecommendedFields(instance);
       warnings.forEach(warning => {
         console.log(`⚠️  Warning: ${warning}`);
@@ -47,11 +47,6 @@ function validateNALTProtocol(filePath, version = 'v1.1.0', checkWarnings = true
 
 function checkStronglyRecommendedFields(data) {
   const warnings = [];
-  
-  // Check for timestamp
-  if (!data.timestamp) {
-    warnings.push("'timestamp' field is strongly recommended but missing");
-  }
   
   // Check mood intensity precision
   if (data.entries) {
@@ -107,12 +102,12 @@ if (require.main === module) {
   const args = process.argv.slice(2);
   
   // Parse command line arguments
-  let filePath, version = 'v1.1.0', checkWarnings = true;
+  let filePath, version = 'v1.1.1', checkWarnings = true;
   
   if (args.length === 0 || args.includes('--help')) {
     console.log('Usage: node validator.js <path_to_json_file> [options]');
     console.log('Options:');
-    console.log('  --version <version>  Schema version (default: v1.1.0)');
+    console.log('  --version <version>  Schema version (default: v1.1.1)');
     console.log('  --no-warnings        Disable strongly recommended field warnings');
     process.exit(args.length === 0 ? 1 : 0);
   }

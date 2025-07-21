@@ -1,11 +1,11 @@
 # NALT Protocol - AI Development Documentation
 
-This comprehensive documentation contains all technical specifications, implementation details, and development guidelines for AI systems working with NALT Protocol v1.1.0. This document is optimized for AI consumption with complete technical details and structured information.
+This comprehensive documentation contains all technical specifications, implementation details, and development guidelines for AI systems working with NALT Protocol v1.1.1. This document is optimized for AI consumption with complete technical details and structured information.
 
 ## Table of Contents
 
 1. [Protocol Overview and Architecture](#1-protocol-overview-and-architecture)
-2. [Complete Specification v1.1.0](#2-complete-specification-v110)
+2. [Complete Specification v1.1.1](#2-complete-specification-v111)
 3. [JSON Schema and Validation Rules](#3-json-schema-and-validation-rules)
 4. [Implementation Guidelines](#4-implementation-guidelines)
 5. [Security Implementation](#5-security-implementation)
@@ -40,16 +40,16 @@ NALT Protocol is a JSON-based specification for structuring and preserving perso
 │ │ - spec_version   │  │  │     Entry Object      │  │   │
 │ │ - document_id    │  │  │  - entry_id          │  │   │
 │ │ - date           │  │  │  - type              │  │   │
-│ │ - timestamp      │  │  │  - mode              │  │   │
-│ │ - meta           │  │  │  - content_format    │  │   │
-│ │ - signature      │  │  │  - content           │  │   │
-│ └─────────────────┘  │  │  - relationships      │  │   │
+│ │ - meta           │  │  │  - mode              │  │   │
+│ │ - signature      │  │  │  - content_format    │  │   │
+│ └─────────────────┘  │  │  - content           │  │   │
+│                      │  │  - relationships      │  │   │
 │                      │  └───────────────────────┘  │   │
 │                      └─────────────────────────────┘   │
 └─────────────────────────────────────────────────────────┘
 ```
 
-## 2. Complete Specification v1.1.0
+## 2. Complete Specification v1.1.1
 
 ### 2.1 File Requirements
 
@@ -61,10 +61,9 @@ NALT Protocol is a JSON-based specification for structuring and preserving perso
 
 ```typescript
 interface NALTDocument {
-  spec_version: string;      // Required: "nalt-protocol/1.1.0"
+  spec_version: string;      // Required: "nalt-protocol/1.1.1"
   document_id: string;       // Required: UUIDv4
   date: string;             // Required: YYYY-MM-DD
-  timestamp?: string;       // Strongly recommended: ISO 8601
   meta: MetaObject;         // Required
   entries: Entry[];         // Required: min 1 entry
   signature?: SignatureObject; // Optional
@@ -89,7 +88,7 @@ interface Entry {
   // Core fields (required)
   entry_id: string;          // UUIDv4 recommended
   type: EntryType;           // Enum: event|reflection|task|idea|log
-  mode: TimeMode;            // Enum: morning|afternoon|evening|night|none
+  mode: TimeMode;            // Enum: morning|afternoon|evening|night|none (event time)
   content_format: ContentFormat; // Enum: text/plain|text/markdown|text/html|application/json|text/org
   content: string;           // Original user content
   
@@ -99,6 +98,9 @@ interface Entry {
   tags?: string[];          // 1-6 snake_case strings
   entities?: Entities;      // Extracted entities
   end_date?: string;        // YYYY-MM-DD for multi-day entries
+  
+  // Optional fields
+  created_at?: string;      // ISO 8601 timestamp when entry was recorded
   
   // Optional extension fields
   x_relations?: Relation[]; // Relationships to other entries
@@ -208,7 +210,7 @@ enum SignatureAlgorithm {
 
 ### 3.1 Schema Location
 
-Official schema URL: `https://nalt-protocol.org/schemas/v1.1.0/schema.json`
+Official schema URL: `https://nalt-protocol.org/schemas/v1.1.1/schema.json`
 
 ### 3.2 Validation Implementation
 
@@ -232,7 +234,7 @@ class NALTValidator {
       "properties": {
         "spec_version": {
           "type": "string",
-          "pattern": "^nalt-protocol/1\\.1\\.0$"
+          "pattern": "^nalt-protocol/1\\.1\\.1$"
         },
         "document_id": {
           "type": "string",
@@ -241,10 +243,6 @@ class NALTValidator {
         "date": {
           "type": "string",
           "format": "date"
-        },
-        "timestamp": {
-          "type": "string",
-          "format": "date-time"
         },
         "meta": {
           "type": "object",
@@ -289,6 +287,10 @@ class NALTValidator {
             },
             "mode": {
               "enum": ["morning", "afternoon", "evening", "night", "none"]
+            },
+            "created_at": {
+              "type": "string",
+              "format": "date-time"
             },
             "content_format": {
               "enum": ["text/plain", "text/markdown", "text/html", "application/json", "text/org"]
@@ -1179,13 +1181,14 @@ class NALTMigrator {
   constructor() {
     this.migrations = {
       '1.0.0': this.migrateFrom_1_0_0.bind(this),
-      '1.1.0': this.migrateFrom_1_1_0.bind(this)
+      '1.1.0': this.migrateFrom_1_1_0.bind(this),
+      '1.1.1': this.migrateFrom_1_1_1.bind(this)
     };
   }
 
   async migrate(document) {
     const currentVersion = this.extractVersion(document.spec_version);
-    const targetVersion = '1.1.0';
+    const targetVersion = '1.1.1';
     
     if (currentVersion === targetVersion) {
       return { document, migrated: false };
@@ -1211,7 +1214,7 @@ class NALTMigrator {
 
   getMigrationPath(from, to) {
     // Simple linear migration for now
-    const versions = ['1.0.0', '1.1.0'];
+    const versions = ['1.0.0', '1.1.0', '1.1.1'];
     const fromIndex = versions.indexOf(from);
     const toIndex = versions.indexOf(to);
     
@@ -1226,7 +1229,7 @@ class NALTMigrator {
     const migrated = { ...document };
     
     // Update spec version
-    migrated.spec_version = 'nalt-protocol/1.1.0';
+    migrated.spec_version = 'nalt-protocol/1.1.1';
     
     // Add required document_id if missing
     if (!migrated.document_id) {
@@ -1288,6 +1291,34 @@ class NALTMigrator {
     };
     
     return migrated;
+  }
+
+  async migrateFrom_1_1_0(document) {
+    // Remove top-level timestamp
+    const { timestamp, ...documentWithoutTimestamp } = document;
+    
+    // Update spec version
+    documentWithoutTimestamp.spec_version = 'nalt-protocol/1.1.1';
+    
+    // If timestamp exists and user wants to preserve it, add to entries
+    if (timestamp && documentWithoutTimestamp.entries) {
+      documentWithoutTimestamp.entries = documentWithoutTimestamp.entries.map(entry => {
+        // Only add created_at if it doesn't already exist
+        if (!entry.created_at) {
+          return { ...entry, created_at: timestamp };
+        }
+        return entry;
+      });
+    }
+    
+    // Add migration metadata
+    documentWithoutTimestamp.x_migration = {
+      from_version: '1.1.0',
+      to_version: '1.1.1',
+      migrated_at: new Date().toISOString()
+    };
+    
+    return documentWithoutTimestamp;
   }
 
   isValidMimeType(format) {
@@ -1416,10 +1447,9 @@ class NALTDocumentBuilder {
 
   reset() {
     this.document = {
-      spec_version: 'nalt-protocol/1.1.0',
+      spec_version: 'nalt-protocol/1.1.1',
       document_id: this.generateUUID(),
       date: new Date().toISOString().split('T')[0],
-      timestamp: new Date().toISOString(),
       meta: {
         language: 'en',
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -1920,7 +1950,7 @@ class NALTTestSuite {
   setupValidationTests() {
     this.addTest('Valid minimal document', async () => {
       const doc = {
-        spec_version: 'nalt-protocol/1.1.0',
+        spec_version: 'nalt-protocol/1.1.1',
         document_id: '550e8400-e29b-41d4-a716-446655440000',
         date: '2025-01-15',
         meta: {
@@ -1946,7 +1976,7 @@ class NALTTestSuite {
 
     this.addTest('Invalid document - missing required field', async () => {
       const doc = {
-        spec_version: 'nalt-protocol/1.1.0',
+        spec_version: 'nalt-protocol/1.1.1',
         // Missing document_id
         date: '2025-01-15',
         meta: {
@@ -2093,10 +2123,9 @@ class NALTTestSuite {
 
   createTestDocument(entries, date = '2025-01-15') {
     return {
-      spec_version: 'nalt-protocol/1.1.0',
+      spec_version: 'nalt-protocol/1.1.1',
       document_id: this.generateUUID(),
       date,
-      timestamp: new Date().toISOString(),
       meta: {
         language: 'en',
         timezone: 'UTC'
@@ -2165,7 +2194,6 @@ class NALTErrorHandler {
       message: errorInfo.message,
       details: errorInfo.details,
       recovery: recovery,
-      timestamp: new Date().toISOString(),
       context: context
     };
   }
@@ -2513,8 +2541,7 @@ class NALTEdgeCaseHandler {
         spec_version: doc1.spec_version,
         document_id: this.generateUUID(),
         date: doc1.date < doc2.date ? doc1.date : doc2.date,
-        timestamp: new Date().toISOString(),
-        meta: { ...doc1.meta, ...doc2.meta },
+          meta: { ...doc1.meta, ...doc2.meta },
         entries: uniqueEntries.sort((a, b) => {
           // Sort by mode order, then by entry_id
           const modeOrder = ['morning', 'afternoon', 'evening', 'night', 'none'];
@@ -2544,7 +2571,7 @@ class NALTEdgeCaseHandler {
 When implementing NALT Protocol support, ensure:
 
 ### Required Features
-- [ ] Full v1.1.0 schema validation
+- [ ] Full v1.1.1 schema validation
 - [ ] UTF-8 encoding support
 - [ ] UUID generation for document_id and entry_id
 - [ ] Date/timestamp handling with timezone support
@@ -2577,7 +2604,7 @@ When implementing NALT Protocol support, ensure:
 - [ ] Comprehensive test coverage
 - [ ] Performance benchmarks
 - [ ] Error handling for all edge cases
-- [ ] Migration tools from v1.0.0
+- [ ] Migration tools from v1.0.0 and v1.1.0
 - [ ] Documentation and examples
 
-This completes the comprehensive AI documentation for NALT Protocol v1.1.0. All technical details, implementation patterns, and best practices are included for AI systems to effectively work with the protocol.
+This completes the comprehensive AI documentation for NALT Protocol v1.1.1. All technical details, implementation patterns, and best practices are included for AI systems to effectively work with the protocol.
