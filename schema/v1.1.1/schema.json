@@ -69,7 +69,7 @@
       "patternProperties": {
         "^x_": {}
       },
-      "additionalProperties": false
+      "additionalProperties": true
     },
     "entryObject": {
       "type": "object",
@@ -174,7 +174,7 @@
       "patternProperties": {
         "^x_": {}
       },
-      "additionalProperties": false
+      "additionalProperties": true
     },
     "moodObject": {
       "type": "object",

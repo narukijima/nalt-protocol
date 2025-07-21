@@ -583,10 +583,13 @@ class NALTParser {
 
 ### 4.3 Extension Policy Implementation
 
+**Important**: All custom/extension fields MUST be prefixed with `x_` to distinguish them from official fields. Parsers MUST ignore unknown fields without the `x_` prefix.
+
 ```javascript
 class NALTExtensionHandler {
   constructor() {
     this.registeredExtensions = new Map();
+    this.strictMode = true; // Enforce x_ prefix rule
   }
 
   registerExtension(prefix, handler) {
@@ -620,8 +623,21 @@ class NALTExtensionHandler {
         if (handler) {
           obj[key] = handler(obj[key], obj);
         }
+      } else if (this.strictMode && !this.isOfficialField(key)) {
+        // In strict mode, warn about non-x_ prefixed unknown fields
+        console.warn(`Unknown field '${key}' should be prefixed with 'x_'`);
       }
     });
+  }
+  
+  isOfficialField(fieldName) {
+    // List of official fields that don't require x_ prefix
+    const officialFields = new Set([
+      'spec_version', 'document_id', 'date', 'meta', 'entries', 'signature',
+      'language', 'timezone', 'entry_id', 'type', 'mode', 'content_format',
+      'content', 'summary', 'moods', 'tags', 'entities', 'end_date', 'created_at'
+    ]);
+    return officialFields.has(fieldName);
   }
 
   findHandler(key) {

@@ -125,6 +125,18 @@ Show how thoughts and events relate:
 }
 ```
 
+### Custom Fields (Extensions)
+Add your own fields using the `x_` prefix:
+```json
+{
+  "x_location_details": "Coffee shop on 5th Avenue",
+  "x_weather": "Sunny, 72°F",
+  "x_custom_category": "personal-growth"
+}
+```
+
+**Important**: All custom fields MUST start with `x_` to distinguish them from official fields. This ensures compatibility with future versions of the protocol.
+
 ## Best Practices
 
 ### 1. One File Per Day
