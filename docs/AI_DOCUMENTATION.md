@@ -2623,4 +2623,79 @@ When implementing NALT Protocol support, ensure:
 - [ ] Migration tools from v1.0.0 and v1.1.0
 - [ ] Documentation and examples
 
+## 11. Migration Tools
+
+Migration tools are provided to automatically convert data from older versions of the specification to newer versions.
+
+### 11.1 v1.1.0 to v1.1.1 Migration
+
+**Script Location**: `tools/migration/migrate_v1.1.0_to_v1.1.1.py`
+
+#### Usage
+
+```bash
+python tools/migration/migrate_v1.1.0_to_v1.1.1.py <json_filename>
+```
+
+#### Example
+
+```bash
+python tools/migration/migrate_v1.1.0_to_v1.1.1.py old_data.json
+# Output: migrated_old_data.json will be created
+```
+
+#### Migration Actions
+
+The migration script performs the following operations:
+
+1. **Timestamp Migration**: Removes top-level `timestamp` field and transfers its value to `created_at` in each entry (only if the entry doesn't already have `created_at`)
+2. **Version Update**: Updates `spec_version` to `nalt-protocol/1.1.1`
+3. **Migration Metadata**: Adds `x_migrated_at` field with the migration timestamp
+
+#### Implementation Details
+
+```python
+def migrate_document(old_doc):
+    """
+    Migrate a NALT Protocol document from v1.1.0 to v1.1.1.
+    """
+    new_doc = old_doc.copy()
+    
+    # Remove timestamp from top level and store it
+    doc_timestamp = new_doc.pop('timestamp', None)
+
+    # Migrate each entry
+    entries = new_doc.get('entries', [])
+    new_doc['entries'] = [migrate_entry(entry, doc_timestamp) for entry in entries]
+
+    # Update version and add migration metadata
+    new_doc['spec_version'] = 'nalt-protocol/1.1.1'
+    new_doc['x_migrated_at'] = datetime.utcnow().isoformat() + 'Z'
+
+    return new_doc
+```
+
+### 11.2 Batch Migration
+
+For migrating multiple files, you can use shell scripting:
+
+```bash
+# Migrate all JSON files in current directory
+for file in *.json; do
+    python tools/migration/migrate_v1.1.0_to_v1.1.1.py "$file"
+done
+```
+
+### 11.3 Validation After Migration
+
+Always validate migrated files against the new schema:
+
+```bash
+# Using Python validator
+python tools/validator/python/validator.py migrated_old_data.json --version v1.1.1
+
+# Using Node.js validator
+node tools/validator/nodejs/validator.js migrated_old_data.json --version v1.1.1
+```
+
 This completes the comprehensive AI documentation for NALT Protocol v1.1.1. All technical details, implementation patterns, and best practices are included for AI systems to effectively work with the protocol.
