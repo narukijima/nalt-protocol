@@ -5,7 +5,7 @@ This comprehensive documentation contains all technical specifications, implemen
 ## Table of Contents
 
 1. [Protocol Overview and Architecture](#1-protocol-overview-and-architecture)
-2. [Complete Specification v1.1.1](#2-complete-specification-v111)
+2. [Complete Specification v1.2.0](#2-complete-specification-v120)
 3. [JSON Schema and Validation Rules](#3-json-schema-and-validation-rules)
 4. [Implementation Guidelines](#4-implementation-guidelines)
 5. [Security Implementation](#5-security-implementation)
@@ -32,24 +32,24 @@ NALT Protocol is a JSON-based specification for structuring and preserving perso
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    NALT Document                         │
+│                NALT Document v1.2.0                      │
 ├─────────────────────────────────────────────────────────┤
 │ ┌─────────────────┐  ┌─────────────────────────────┐   │
 │ │   Top-Level      │  │        Entries Array        │   │
 │ │   Metadata       │  │  ┌───────────────────────┐  │   │
-│ │ - spec_version   │  │  │     Entry Object      │  │   │
+│ │ - spec_version   │  │  │   Entry Object (Core) │  │   │
 │ │ - document_id    │  │  │  - entry_id          │  │   │
 │ │ - date           │  │  │  - type              │  │   │
 │ │ - meta           │  │  │  - mode              │  │   │
-│ │ - signature      │  │  │  - content_format    │  │   │
+│ │ - [x_* extensions]│ │  │  - content_format    │  │   │
 │ └─────────────────┘  │  │  - content           │  │   │
-│                      │  │  - relationships      │  │   │
+│                      │  │  - [x_* extensions]   │  │   │
 │                      │  └───────────────────────┘  │   │
 │                      └─────────────────────────────┘   │
 └─────────────────────────────────────────────────────────┘
 ```
 
-## 2. Complete Specification v1.1.1
+## 2. Complete Specification v1.2.0 (Slim-Core)
 
 ### 2.1 File Requirements
 
@@ -66,7 +66,7 @@ interface NALTDocument {
   date: string;             // Required: YYYY-MM-DD
   meta: MetaObject;         // Required
   entries: Entry[];         // Required: min 1 entry
-  signature?: SignatureObject; // Optional
+  [key: `x_${string}`]: any;  // Optional: Extension fields
 }
 ```
 
@@ -76,7 +76,6 @@ interface NALTDocument {
 interface MetaObject {
   language: string;              // Required: ISO 639-1
   timezone: string;              // Required: IANA timezone
-  x_utc_offset_minutes?: number; // Optional: Performance optimization
   [key: `x_${string}`]: any;     // Optional: Extension fields
 }
 ```
@@ -85,86 +84,48 @@ interface MetaObject {
 
 ```typescript
 interface Entry {
-  // Core fields (required)
+  // Core fields (required) - v1.2.0 slim-core
   entry_id: string;          // UUIDv4 recommended
   type: EntryType;           // Enum: event|reflection|task|idea|log
-  mode: TimeMode;            // Enum: morning|afternoon|evening|night|none (event time)
+  mode: TimeMode;            // Enum: morning|afternoon|evening|night|none
   content_format: ContentFormat; // Enum: text/plain|text/markdown|text/html|application/json|text/org
   content: string;           // Original user content
   
-  // Recommended fields
-  summary?: string;          // AI-generated, ≤140 chars
-  moods?: Mood[];           // Array of mood objects
-  tags?: string[];          // 1-6 snake_case strings
-  entities?: Entities;      // Extracted entities
-  end_date?: string;        // YYYY-MM-DD for multi-day entries
-  
-  // Optional fields
-  created_at?: string;      // ISO 8601 timestamp when entry was recorded
-  
-  // Optional extension fields
-  x_relations?: Relation[]; // Relationships to other entries
-  x_due_date?: string;      // YYYY-MM-DD for tasks
-  [key: `x_${string}`]: any; // Custom extensions
+  // Extension fields (all optional with x_ prefix)
+  [key: `x_${string}`]: any; // Custom extensions including:
+  // x_summary?: string;      // AI-generated summary
+  // x_moods?: Mood[];        // Mood tracking
+  // x_tags?: string[];       // Categorization
+  // x_entities?: Entities;   // Entity extraction
+  // x_end_date?: string;     // Multi-day entries
+  // x_created_at?: string;   // Creation timestamp
+  // x_relations?: Relation[];// Entry relationships
+  // x_due_date?: string;     // Task due dates
 }
 
-interface Mood {
-  type: MoodType;    // One of 20 predefined mood types
-  intensity: number; // 0.00-1.00, precision 0.01
+// v1.2.0 Note: These interfaces are for extension fields only
+// Example extension field definitions:
+/*
+interface XMood {
+  type: string;       // Mood type
+  intensity: number;  // 0.00-1.00
 }
 
-enum MoodType {
-  // Positive moods
-  HAPPY = "happy",           // Joy from experiences or interactions
-  EXCITED = "excited",       // Strong anticipation or enthusiasm
-  PEACEFUL = "peaceful",     // Inner tranquility, calm, conflict-free state
-  CONTENT = "content",       // Satisfaction, fulfillment without additional needs
-  GRATEFUL = "grateful",     // Thankfulness for kindness or benefits received
-  CALM = "calm",            // Steady, composed, free of agitation
-  HOPEFUL = "hopeful",      // Expectation and trust in positive future outcomes
-  PROUD = "proud",          // Satisfaction from achievements by oneself or others
-  MOTIVATED = "motivated",  // Determination or eagerness toward future actions
-  
-  // Negative moods
-  SAD = "sad",             // Sense of loss, disappointment, melancholy
-  ANGRY = "angry",         // Irritation or anger toward unfairness or interference
-  ANXIOUS = "anxious",     // Worry, nervousness about future uncertainty
-  FRUSTRATED = "frustrated", // Irritation from obstacles to goals or desires
-  TIRED = "tired",         // Physical or mental fatigue
-  CONFUSED = "confused",   // Uncertainty, disorientation in unclear situations
-  LONELY = "lonely",       // Feeling isolated or disconnected from others
-  
-  // Neutral moods
-  NEUTRAL = "neutral",     // Regular, emotionally unbiased state
-  CURIOUS = "curious",     // Eager to know or understand more
-  NOSTALGIC = "nostalgic", // Sentimental or reflective emotions about the past
-  SURPRISED = "surprised"  // Unexpected reaction to unforeseen events or outcomes
-}
-
-interface Entities {
+interface XEntities {
   people?: string[];
   locations?: string[];
   organizations?: string[];
   [key: string]: string[] | undefined;
 }
 
-interface Relation {
-  type: RelationType; // caused_by|led_to|related_to|explains|contradicts
-  target_id: string;  // Entry ID reference
+interface XRelation {
+  type: string;      // Relationship type
+  target_id: string; // Entry ID reference
 }
+*/
 ```
 
-### 2.5 Signature Object Schema
-
-```typescript
-interface SignatureObject {
-  alg: SignatureAlgorithm; // EdDSA|ES256|RS256
-  sig: string;             // Base64URL encoded signature
-  public_key: string;      // DID format recommended
-}
-```
-
-### 2.6 Enumeration Definitions
+### 2.5 Enumeration Definitions (Core v1.2.0)
 
 ```typescript
 enum EntryType {
@@ -191,19 +152,7 @@ enum ContentFormat {
   ORG = "text/org"
 }
 
-enum RelationType {
-  CAUSED_BY = "caused_by",
-  LED_TO = "led_to",
-  RELATED_TO = "related_to",
-  EXPLAINS = "explains",
-  CONTRADICTS = "contradicts"
-}
-
-enum SignatureAlgorithm {
-  EdDSA = "EdDSA",
-  ES256 = "ES256",
-  RS256 = "RS256"
-}
+// Extension field enumerations moved to implementation section
 ```
 
 ## 3. JSON Schema and Validation Rules
@@ -211,6 +160,8 @@ enum SignatureAlgorithm {
 ### 3.1 Schema Location
 
 Official schema URL: `https://nalt-protocol.org/schemas/v1.2.0/schema.json`
+
+**Note**: v1.2.0 schema reflects the slim-core design with only essential fields.
 
 ### 3.2 Validation Implementation
 
@@ -255,11 +206,6 @@ class NALTValidator {
             "timezone": {
               "type": "string"
             },
-            "x_utc_offset_minutes": {
-              "type": "integer",
-              "minimum": -720,
-              "maximum": 840
-            }
           },
           "additionalProperties": true
         },
@@ -406,7 +352,7 @@ class NALTValidator {
       };
     }
     
-    // Additional custom validations
+    // v1.2.0: Custom validations simplified due to slim-core design
     const customErrors = this.customValidations(document);
     if (customErrors.length > 0) {
       return {
@@ -668,7 +614,9 @@ const aiExtension = {
 
 ## 5. Security Implementation
 
-### 5.1 Digital Signature Implementation
+### 5.1 Digital Signature Implementation (Extension)
+
+**Note**: v1.2.0 removed signature from core spec. This implementation shows how to add signature support as an extension.
 
 ```javascript
 const crypto = require('crypto');
@@ -681,8 +629,8 @@ class NALTSigner {
   }
 
   async signDocument(document) {
-    // Remove existing signature
-    const { signature, ...documentToSign } = document;
+    // Remove existing x_signature extension
+    const { x_signature, ...documentToSign } = document;
     
     // Canonicalize JSON (RFC 8785)
     const canonical = canonicalize(documentToSign);
@@ -694,7 +642,7 @@ class NALTSigner {
     
     return {
       ...document,
-      signature: {
+      x_signature: {
         alg: 'EdDSA',
         sig: signature,
         public_key: this.publicKeyDID
@@ -703,11 +651,11 @@ class NALTSigner {
   }
 
   async verifyDocument(document) {
-    if (!document.signature) {
+    if (!document.x_signature) {
       return { valid: false, error: 'No signature present' };
     }
     
-    const { signature, ...documentToVerify } = document;
+    const { x_signature, ...documentToVerify } = document;
     const canonical = canonicalize(documentToVerify);
     
     try {
@@ -715,9 +663,9 @@ class NALTSigner {
       verifier.update(canonical);
       
       // Extract public key from DID (implementation depends on DID method)
-      const publicKey = await this.resolvePublicKey(signature.public_key);
+      const publicKey = await this.resolvePublicKey(x_signature.public_key);
       
-      const valid = verifier.verify(publicKey, signature.sig, 'base64url');
+      const valid = verifier.verify(publicKey, x_signature.sig, 'base64url');
       return { valid, error: valid ? null : 'Signature verification failed' };
     } catch (error) {
       return { valid: false, error: error.message };
@@ -880,7 +828,9 @@ class NALTAccessControl {
 
 ## 6. Performance Optimization
 
-### 6.1 UTC Offset Optimization
+### 6.1 UTC Offset Optimization (Extension)
+
+**Note**: v1.2.0 removed UTC offset from core spec. Applications can implement it as an extension.
 
 ```javascript
 class TimeZoneOptimizer {
@@ -892,14 +842,14 @@ class TimeZoneOptimizer {
     const cacheKey = `${document.date}-${document.meta.timezone}`;
     
     if (this.cache.has(cacheKey)) {
-      document.meta.x_utc_offset_minutes = this.cache.get(cacheKey);
+      document.x_utc_offset_minutes = this.cache.get(cacheKey);
       return document;
     }
     
     const offset = this.calculateOffset(document.date, document.meta.timezone);
     this.cache.set(cacheKey, offset);
     
-    document.meta.x_utc_offset_minutes = offset;
+    document.x_utc_offset_minutes = offset;
     return document;
   }
 
@@ -913,6 +863,13 @@ class TimeZoneOptimizer {
   convertToLocalTime(timestamp, utcOffsetMinutes) {
     const date = new Date(timestamp);
     return new Date(date.getTime() + utcOffsetMinutes * 60000);
+  }
+
+  // v1.2.0: When reading documents, check for UTC offset in multiple locations
+  getUTCOffset(document) {
+    return document.x_utc_offset_minutes || 
+           document.meta?.x_utc_offset_minutes || 
+           this.calculateOffset(document.date, document.meta.timezone);
   }
 }
 ```
@@ -938,7 +895,7 @@ class NALTIndexer {
       // Textual index
       this.indexText(entry);
       
-      // Relational index
+      // v1.2.0: Relational index for x_relations extension
       if (entry.x_relations) {
         entry.x_relations.forEach(relation => {
           this.indices.relational.addEdge(
@@ -960,8 +917,9 @@ class NALTIndexer {
       this.indices.textual.addDocument(entry.entry_id, token);
     });
     
-    if (entry.summary) {
-      const summaryTokens = this.tokenize(entry.summary);
+    // v1.2.0: Index x_summary if present
+    if (entry.x_summary) {
+      const summaryTokens = this.tokenize(entry.x_summary);
       summaryTokens.forEach(token => {
         this.indices.textual.addDocument(entry.entry_id, token, 1.5); // Higher weight
       });
@@ -972,17 +930,18 @@ class NALTIndexer {
     // Type index
     this.addToCategoricalIndex('type', entry.type, entry.entry_id);
     
-    // Mood index
-    if (entry.moods) {
-      entry.moods.forEach(mood => {
+    // v1.2.0: Index extension fields if present
+    // Mood index (x_moods)
+    if (entry.x_moods) {
+      entry.x_moods.forEach(mood => {
         const moodKey = `${mood.type}:${Math.round(mood.intensity * 100)}`;
         this.addToCategoricalIndex('mood', moodKey, entry.entry_id);
       });
     }
     
-    // Tag index
-    if (entry.tags) {
-      entry.tags.forEach(tag => {
+    // Tag index (x_tags)
+    if (entry.x_tags) {
+      entry.x_tags.forEach(tag => {
         this.addToCategoricalIndex('tag', tag, entry.entry_id);
       });
     }
@@ -1190,6 +1149,8 @@ fs.createReadStream('large-nalt-file.json')
 
 ## 7. Migration Procedures
 
+**Note**: This section shows migration to v1.2.0, which removes many fields to create a slim-core specification.
+
 ### 7.1 Version Detection and Migration
 
 ```javascript
@@ -1198,7 +1159,8 @@ class NALTMigrator {
     this.migrations = {
       '1.0.0': this.migrateFrom_1_0_0.bind(this),
       '1.1.0': this.migrateFrom_1_1_0.bind(this),
-      '1.1.1': this.migrateFrom_1_1_1.bind(this)
+      '1.1.1': this.migrateFrom_1_1_1.bind(this),
+      '1.2.0': null // v1.2.0 is the current version
     };
   }
 
@@ -1230,7 +1192,7 @@ class NALTMigrator {
 
   getMigrationPath(from, to) {
     // Simple linear migration for now
-    const versions = ['1.0.0', '1.1.0', '1.1.1'];
+    const versions = ['1.0.0', '1.1.0', '1.1.1', '1.2.0'];
     const fromIndex = versions.indexOf(from);
     const toIndex = versions.indexOf(to);
     
@@ -1245,7 +1207,7 @@ class NALTMigrator {
     const migrated = { ...document };
     
     // Update spec version
-    migrated.spec_version = 'nalt-protocol/1.1.1';
+    migrated.spec_version = 'nalt-protocol/1.2.0';
     
     // Add required document_id if missing
     if (!migrated.document_id) {
@@ -1277,9 +1239,9 @@ class NALTMigrator {
         updated.content_format = 'text/plain';
       }
       
-      // Round mood intensities to 0.01 precision
-      if (updated.moods) {
-        updated.moods = updated.moods.map(mood => ({
+      // v1.2.0: Handle mood data as extension if present
+      if (updated.x_moods) {
+        updated.x_moods = updated.x_moods.map(mood => ({
           ...mood,
           intensity: Math.round(mood.intensity * 100) / 100
         }));
@@ -1288,21 +1250,13 @@ class NALTMigrator {
       return updated;
     });
     
-    // Add UTC offset if possible
-    if (migrated.meta && migrated.meta.timezone) {
-      const offset = this.calculateUTCOffset(
-        migrated.date,
-        migrated.meta.timezone
-      );
-      if (offset !== null) {
-        migrated.meta.x_utc_offset_minutes = offset;
-      }
-    }
+    // v1.2.0: UTC offset removed from core spec
+    // Applications can still add it as extension if needed
     
     // Add migration metadata
     migrated.x_migration = {
       from_version: '1.0.0',
-      to_version: '1.1.0',
+      to_version: '1.2.0',
       migrated_at: new Date().toISOString()
     };
     
@@ -1310,16 +1264,22 @@ class NALTMigrator {
   }
 
   async migrateFrom_1_1_0(document) {
+    // First migrate to 1.1.1
+    const v1_1_1 = await this.migrateFrom_1_1_0_to_1_1_1(document);
+    // Then migrate to 1.2.0
+    return this.migrateFrom_1_1_1(v1_1_1);
+  }
+
+  async migrateFrom_1_1_0_to_1_1_1(document) {
     // Remove top-level timestamp
     const { timestamp, ...documentWithoutTimestamp } = document;
     
     // Update spec version
     documentWithoutTimestamp.spec_version = 'nalt-protocol/1.1.1';
     
-    // If timestamp exists and user wants to preserve it, add to entries
+    // If timestamp exists, add to entries as created_at
     if (timestamp && documentWithoutTimestamp.entries) {
       documentWithoutTimestamp.entries = documentWithoutTimestamp.entries.map(entry => {
-        // Only add created_at if it doesn't already exist
         if (!entry.created_at) {
           return { ...entry, created_at: timestamp };
         }
@@ -1327,14 +1287,59 @@ class NALTMigrator {
       });
     }
     
+    return documentWithoutTimestamp;
+  }
+
+  async migrateFrom_1_1_1(document) {
+    const migrated = { ...document };
+    
+    // Update spec version
+    migrated.spec_version = 'nalt-protocol/1.2.0';
+    
+    // Migrate top-level signature to x_signature
+    if (migrated.signature) {
+      migrated.x_signature = migrated.signature;
+      delete migrated.signature;
+    }
+    
+    // Migrate meta.x_utc_offset_minutes to document level
+    if (migrated.meta?.x_utc_offset_minutes !== undefined) {
+      migrated.x_utc_offset_minutes = migrated.meta.x_utc_offset_minutes;
+      delete migrated.meta.x_utc_offset_minutes;
+    }
+    
+    // Migrate entries
+    migrated.entries = migrated.entries.map(entry => {
+      const newEntry = { ...entry };
+      
+      // Migrate fields to x_ extensions
+      const fieldMappings = {
+        'summary': 'x_summary',
+        'moods': 'x_moods',
+        'tags': 'x_tags',
+        'entities': 'x_entities',
+        'end_date': 'x_end_date',
+        'created_at': 'x_created_at'
+      };
+      
+      Object.entries(fieldMappings).forEach(([oldField, newField]) => {
+        if (newEntry[oldField] !== undefined) {
+          newEntry[newField] = newEntry[oldField];
+          delete newEntry[oldField];
+        }
+      });
+      
+      return newEntry;
+    });
+    
     // Add migration metadata
-    documentWithoutTimestamp.x_migration = {
-      from_version: '1.1.0',
-      to_version: '1.1.1',
+    migrated.x_migration = {
+      from_version: '1.1.1',
+      to_version: '1.2.0',
       migrated_at: new Date().toISOString()
     };
     
-    return documentWithoutTimestamp;
+    return migrated;
   }
 
   isValidMimeType(format) {
@@ -1540,10 +1545,10 @@ class NALTDocumentBuilder {
       throw new Error('Document must have at least one entry');
     }
     
-    // Add UTC offset
+    // v1.2.0: UTC offset can be added as document-level extension
     const offset = this.calculateUTCOffset();
     if (offset !== null) {
-      this.document.meta.x_utc_offset_minutes = offset;
+      this.document.x_utc_offset_minutes = offset;
     }
     
     return this.document;
@@ -1569,12 +1574,12 @@ const document = builder
   .addEntry({
     type: 'event',
     content: 'Started working on new AI project',
-    tags: ['work', 'ai', 'project_start']
+    x_tags: ['work', 'ai', 'project_start']  // v1.2.0: tags as extension
   })
   .addRelatedEntry({
     type: 'reflection',
     content: 'Feeling excited about the possibilities this project could bring',
-    moods: [{ type: 'excited', intensity: 0.85 }]
+    x_moods: [{ type: 'excited', intensity: 0.85 }]  // v1.2.0: moods as extension
   }, 'caused_by')
   .build();
 ```
@@ -1606,9 +1611,10 @@ class NALTQueryEngine {
         }
         this.indices.byType.get(entry.type).push({ doc, entry });
         
-        // Mood index
-        if (entry.moods) {
-          entry.moods.forEach(mood => {
+        // v1.2.0: Index extension fields
+        // Mood index (x_moods)
+        if (entry.x_moods) {
+          entry.x_moods.forEach(mood => {
             const key = mood.type;
             if (!this.indices.byMood.has(key)) {
               this.indices.byMood.set(key, []);
@@ -1617,9 +1623,9 @@ class NALTQueryEngine {
           });
         }
         
-        // Tag index
-        if (entry.tags) {
-          entry.tags.forEach(tag => {
+        // Tag index (x_tags)
+        if (entry.x_tags) {
+          entry.x_tags.forEach(tag => {
             if (!this.indices.byTag.has(tag)) {
               this.indices.byTag.set(tag, []);
             }
@@ -1674,13 +1680,14 @@ class NALTQueryEngine {
         continue;
       }
       
+      // v1.2.0: Check for moods in extension field
       const moodEntries = doc.entries.filter(entry => 
-        entry.moods?.some(mood => mood.type === moodType)
+        entry.x_moods?.some(mood => mood.type === moodType)
       );
       
       if (moodEntries.length > 0) {
         const avgIntensity = moodEntries.reduce((sum, entry) => {
-          const mood = entry.moods.find(m => m.type === moodType);
+          const mood = entry.x_moods.find(m => m.type === moodType);
           return sum + (mood?.intensity || 0);
         }, 0) / moodEntries.length;
         
@@ -1709,7 +1716,7 @@ class NALTQuery {
 
   whereMood(moodType, minIntensity = 0) {
     this.filters.push(result => 
-      result.entry.moods?.some(mood => 
+      result.entry.x_moods?.some(mood => 
         mood.type === moodType && mood.intensity >= minIntensity
       )
     );
@@ -1717,7 +1724,7 @@ class NALTQuery {
   }
 
   whereTag(tag) {
-    this.filters.push(result => result.entry.tags?.includes(tag));
+    this.filters.push(result => result.entry.x_tags?.includes(tag));
     return this;
   }
 
@@ -1732,7 +1739,7 @@ class NALTQuery {
     const lower = searchText.toLowerCase();
     this.filters.push(result => 
       result.entry.content.toLowerCase().includes(lower) ||
-      result.entry.summary?.toLowerCase().includes(lower)
+      result.entry.x_summary?.toLowerCase().includes(lower)
     );
     return this;
   }
@@ -1774,27 +1781,28 @@ class NALTAIProcessor {
       await Promise.all(batch.map(async (entry, index) => {
         const actualIndex = i + index;
         
-        // Generate summary if missing
-        if (!entry.summary) {
-          processed.entries[actualIndex].summary = 
+        // v1.2.0: AI enrichments should be stored as extension fields
+        // Generate summary if needed
+        if (!entry.x_summary) {
+          processed.entries[actualIndex].x_summary = 
             await this.generateSummary(entry.content);
         }
         
         // Extract entities
-        if (!entry.entities) {
-          processed.entries[actualIndex].entities = 
+        if (!entry.x_entities) {
+          processed.entries[actualIndex].x_entities = 
             await this.extractEntities(entry.content);
         }
         
-        // Detect moods if missing
-        if (!entry.moods || entry.moods.length === 0) {
-          processed.entries[actualIndex].moods = 
+        // Detect moods if needed
+        if (!entry.x_moods || entry.x_moods.length === 0) {
+          processed.entries[actualIndex].x_moods = 
             await this.detectMoods(entry.content);
         }
         
         // Generate tags
-        if (!entry.tags || entry.tags.length === 0) {
-          processed.entries[actualIndex].tags = 
+        if (!entry.x_tags || entry.x_tags.length === 0) {
+          processed.entries[actualIndex].x_tags = 
             await this.generateTags(entry);
         }
       }));
@@ -1837,10 +1845,12 @@ class NALTAIProcessor {
       }
     });
     
+    // v1.2.0: Return as extension field structure
     return Object.keys(entities).length > 0 ? entities : undefined;
   }
 
   async detectMoods(content) {
+    // v1.2.0: Mood types can be application-defined when using extensions
     const validMoodTypes = [
       // Positive moods
       'happy', 'excited', 'peaceful', 'content', 'grateful', 
@@ -1872,7 +1882,7 @@ class NALTAIProcessor {
     const context = {
       type: entry.type,
       content: entry.content,
-      moods: entry.moods?.map(m => m.type).join(', ')
+      moods: entry.x_moods?.map(m => m.type).join(', ')
     };
     
     const response = await this.aiService.complete({
@@ -1882,6 +1892,7 @@ class NALTAIProcessor {
     
     const tags = JSON.parse(response.text);
     
+    // v1.2.0: Return tags for x_tags extension field
     return tags
       .slice(0, 6)
       .map(tag => tag.toLowerCase().replace(/\s+/g, '_'));
@@ -1898,6 +1909,7 @@ class NALTAIProcessor {
         const relation = await this.detectRelation(entries[i], entries[j]);
         
         if (relation) {
+          // v1.2.0: x_relations is an extension field
           if (!updatedEntries[i].x_relations) {
             updatedEntries[i].x_relations = [];
           }
@@ -2010,34 +2022,27 @@ class NALTTestSuite {
       }
     });
 
-    this.addTest('Mood intensity precision', async () => {
+    // v1.2.0: Mood testing moved to extension field validation
+    this.addTest('Extension field validation', async () => {
       const entry = {
         entry_id: 'test-1',
         type: 'reflection',
         mode: 'evening',
         content_format: 'text/plain',
         content: 'Feeling good',
-        moods: [
+        x_moods: [
           { type: 'happy', intensity: 0.85 },
           { type: 'calm', intensity: 0.5 }
         ]
       };
       
-      // Test that intensity values are properly validated
+      // v1.2.0: Extension fields should be preserved
       const validator = new NALTValidator();
       const doc = this.createTestDocument([entry]);
       const result = validator.validate(doc);
       
       if (!result.valid) {
-        throw new Error('Valid mood intensities rejected');
-      }
-      
-      // Test invalid intensity
-      entry.moods[0].intensity = 1.001;
-      const invalidResult = validator.validate(doc);
-      
-      if (invalidResult.valid) {
-        throw new Error('Invalid mood intensity accepted');
+        throw new Error('Document with extension fields rejected');
       }
     });
   }
@@ -2598,7 +2603,7 @@ When implementing NALT Protocol support, ensure:
 - [ ] Digital signature support (EdDSA, ES256, RS256)
 - [ ] Entry segmentation for large content
 - [ ] UTC offset calculation and storage
-- [ ] Mood intensity precision (0.01)
+- [ ] Mood tracking (x_moods with intensity precision)
 - [ ] Multi-day entry support (end_date)
 - [ ] Relationship tracking between entries
 
@@ -2627,29 +2632,33 @@ When implementing NALT Protocol support, ensure:
 
 Migration tools are provided to automatically convert data from older versions of the specification to newer versions.
 
-### 11.1 v1.1.0 to v1.1.1 Migration
+### 11.1 v1.1.1 to v1.2.0 Migration
 
-**Script Location**: `tools/migration/migrate_v1.1.0_to_v1.1.1.py`
+**Script Location**: `tools/migration/migrate_v1.1.1_to_v1.2.0.py`
 
 #### Usage
 
 ```bash
-python tools/migration/migrate_v1.1.0_to_v1.1.1.py <json_filename>
+python tools/migration/migrate_v1.1.1_to_v1.2.0.py <json_filename>
 ```
 
 #### Example
 
 ```bash
-python tools/migration/migrate_v1.1.0_to_v1.1.1.py old_data.json
+python tools/migration/migrate_v1.1.1_to_v1.2.0.py old_data.json
 # Output: migrated_old_data.json will be created
 ```
 
 #### Migration Actions
 
-The migration script performs the following operations:
+The v1.1.1 to v1.2.0 migration script performs the following operations:
 
-1. **Timestamp Migration**: Removes top-level `timestamp` field and transfers its value to `created_at` in each entry (only if the entry doesn't already have `created_at`)
-2. **Version Update**: Updates `spec_version` to `nalt-protocol/1.1.1`
+1. **Field Migration**: Moves all removed fields to extension fields with `x_` prefix:
+   - `signature` → `x_signature`
+   - `meta.x_utc_offset_minutes` → document-level `x_utc_offset_minutes`
+   - Entry fields: `summary` → `x_summary`, `moods` → `x_moods`, `tags` → `x_tags`, `entities` → `x_entities`, `end_date` → `x_end_date`, `created_at` → `x_created_at`
+   - `x_relations` and `x_due_date` remain as extension fields
+2. **Version Update**: Updates `spec_version` to `nalt-protocol/1.2.0`
 3. **Migration Metadata**: Adds `x_migrated_at` field with the migration timestamp
 
 #### Implementation Details
@@ -2657,22 +2666,47 @@ The migration script performs the following operations:
 ```python
 def migrate_document(old_doc):
     """
-    Migrate a NALT Protocol document from v1.1.0 to v1.1.1.
+    Migrate a NALT Protocol document from v1.1.1 to v1.2.0.
     """
     new_doc = old_doc.copy()
     
-    # Remove timestamp from top level and store it
-    doc_timestamp = new_doc.pop('timestamp', None)
-
+    # Migrate top-level fields
+    if 'signature' in new_doc:
+        new_doc['x_signature'] = new_doc.pop('signature')
+    
+    # Migrate meta fields
+    if 'x_utc_offset_minutes' in new_doc.get('meta', {}):
+        new_doc['x_utc_offset_minutes'] = new_doc['meta'].pop('x_utc_offset_minutes')
+    
     # Migrate each entry
     entries = new_doc.get('entries', [])
-    new_doc['entries'] = [migrate_entry(entry, doc_timestamp) for entry in entries]
+    new_doc['entries'] = [migrate_entry(entry) for entry in entries]
 
     # Update version and add migration metadata
-    new_doc['spec_version'] = 'nalt-protocol/1.1.1'
+    new_doc['spec_version'] = 'nalt-protocol/1.2.0'
     new_doc['x_migrated_at'] = datetime.utcnow().isoformat() + 'Z'
 
     return new_doc
+
+def migrate_entry(entry):
+    """Migrate entry fields to v1.2.0 extension format."""
+    new_entry = entry.copy()
+    
+    # Migrate removed fields to x_ extensions
+    field_mappings = {
+        'summary': 'x_summary',
+        'moods': 'x_moods',
+        'tags': 'x_tags',
+        'entities': 'x_entities',
+        'end_date': 'x_end_date',
+        'created_at': 'x_created_at'
+    }
+    
+    for old_field, new_field in field_mappings.items():
+        if old_field in new_entry:
+            new_entry[new_field] = new_entry.pop(old_field)
+    
+    return new_entry
 ```
 
 ### 11.2 Batch Migration
@@ -2682,7 +2716,7 @@ For migrating multiple files, you can use shell scripting:
 ```bash
 # Migrate all JSON files in current directory
 for file in *.json; do
-    python tools/migration/migrate_v1.1.0_to_v1.1.1.py "$file"
+    python tools/migration/migrate_v1.1.1_to_v1.2.0.py "$file"
 done
 ```
 
@@ -2692,10 +2726,62 @@ Always validate migrated files against the new schema:
 
 ```bash
 # Using Python validator
-python tools/validator/python/validator.py migrated_old_data.json --version v1.1.1
+python tools/validator/python/validator.py migrated_old_data.json --version v1.2.0
 
 # Using Node.js validator
-node tools/validator/nodejs/validator.js migrated_old_data.json --version v1.1.1
+node tools/validator/nodejs/validator.js migrated_old_data.json --version v1.2.0
 ```
 
-This completes the comprehensive AI documentation for NALT Protocol v1.1.1. All technical details, implementation patterns, and best practices are included for AI systems to effectively work with the protocol.
+This completes the comprehensive AI documentation for NALT Protocol v1.2.0 (slim-core release). All technical details, implementation patterns, and best practices are included for AI systems to effectively work with the protocol.
+
+## Key v1.2.0 Changes Summary
+
+1. **Slim-Core Design**: Only essential fields remain in the core specification
+2. **Removed Fields**: All non-essential fields moved to extension fields:
+   - Top-level: `signature` → `x_signature`
+   - Meta: `x_utc_offset_minutes` → document-level extension
+   - Entry: `summary`, `moods`, `tags`, `entities`, `end_date`, `created_at` → `x_` prefixed extensions
+3. **Extension Philosophy**: Applications can implement any removed functionality as extension fields
+4. **Backward Compatibility**: Migration tools provided to convert v1.1.1 documents to v1.2.0 format
+
+## Handling Legacy Fields in v1.2.0
+
+When working with v1.2.0, applications should:
+
+1. **Reading Documents**: Check for both legacy field names and new extension field names
+2. **Writing Documents**: Always use the new `x_` prefixed extension fields
+3. **Migration**: Use the provided migration tools to convert legacy documents
+
+```javascript
+// Example: Reading mood data that might be in old or new format
+function getMoods(entry) {
+  return entry.x_moods || entry.moods || [];
+}
+
+// Example: Writing mood data in v1.2.0 format
+function setMoods(entry, moods) {
+  entry.x_moods = moods;
+  // Do not set entry.moods in v1.2.0
+}
+
+// Example: Handling all removed fields
+function migrateEntry(entry) {
+  const fieldMappings = {
+    'summary': 'x_summary',
+    'moods': 'x_moods',
+    'tags': 'x_tags',
+    'entities': 'x_entities',
+    'end_date': 'x_end_date',
+    'created_at': 'x_created_at'
+  };
+  
+  Object.entries(fieldMappings).forEach(([old, new_]) => {
+    if (entry[old] !== undefined && entry[new_] === undefined) {
+      entry[new_] = entry[old];
+      delete entry[old];
+    }
+  });
+  
+  return entry;
+}
+```
