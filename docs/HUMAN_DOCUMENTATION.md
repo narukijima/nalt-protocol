@@ -12,7 +12,7 @@ Here's the simplest possible NALT document:
 
 ```json
 {
-  "spec_version": "nalt-protocol/1.1.1",
+  "spec_version": "nalt-protocol/1.2.0",
   "document_id": "550e8400-e29b-41d4-a716-446655440000",
   "date": "2025-01-15",
   "meta": {

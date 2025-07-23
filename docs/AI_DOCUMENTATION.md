@@ -1,6 +1,6 @@
 # NALT Protocol - AI Development Documentation
 
-This comprehensive documentation contains all technical specifications, implementation details, and development guidelines for AI systems working with NALT Protocol v1.1.1. This document is optimized for AI consumption with complete technical details and structured information.
+This comprehensive documentation contains all technical specifications, implementation details, and development guidelines for AI systems working with NALT Protocol v1.2.0. This document is optimized for AI consumption with complete technical details and structured information.
 
 ## Table of Contents
 
@@ -61,7 +61,7 @@ NALT Protocol is a JSON-based specification for structuring and preserving perso
 
 ```typescript
 interface NALTDocument {
-  spec_version: string;      // Required: "nalt-protocol/1.1.1"
+  spec_version: string;      // Required: "nalt-protocol/1.2.0"
   document_id: string;       // Required: UUIDv4
   date: string;             // Required: YYYY-MM-DD
   meta: MetaObject;         // Required
@@ -210,7 +210,7 @@ enum SignatureAlgorithm {
 
 ### 3.1 Schema Location
 
-Official schema URL: `https://nalt-protocol.org/schemas/v1.1.1/schema.json`
+Official schema URL: `https://nalt-protocol.org/schemas/v1.2.0/schema.json`
 
 ### 3.2 Validation Implementation
 
@@ -1463,7 +1463,7 @@ class NALTDocumentBuilder {
 
   reset() {
     this.document = {
-      spec_version: 'nalt-protocol/1.1.1',
+      spec_version: 'nalt-protocol/1.2.0',
       document_id: this.generateUUID(),
       date: new Date().toISOString().split('T')[0],
       meta: {
@@ -1966,7 +1966,7 @@ class NALTTestSuite {
   setupValidationTests() {
     this.addTest('Valid minimal document', async () => {
       const doc = {
-        spec_version: 'nalt-protocol/1.1.1',
+        spec_version: 'nalt-protocol/1.2.0',
         document_id: '550e8400-e29b-41d4-a716-446655440000',
         date: '2025-01-15',
         meta: {
@@ -1992,7 +1992,7 @@ class NALTTestSuite {
 
     this.addTest('Invalid document - missing required field', async () => {
       const doc = {
-        spec_version: 'nalt-protocol/1.1.1',
+        spec_version: 'nalt-protocol/1.2.0',
         // Missing document_id
         date: '2025-01-15',
         meta: {
@@ -2139,7 +2139,7 @@ class NALTTestSuite {
 
   createTestDocument(entries, date = '2025-01-15') {
     return {
-      spec_version: 'nalt-protocol/1.1.1',
+      spec_version: 'nalt-protocol/1.2.0',
       document_id: this.generateUUID(),
       date,
       meta: {

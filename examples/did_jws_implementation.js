@@ -1,5 +1,5 @@
 /**
- * DID/JWS Implementation Example for NALT Protocol v1.1.1
+ * DID/JWS Implementation Example for NALT Protocol v1.2.0
  * 
  * This example demonstrates how to:
  * 1. Generate a DID (Decentralized Identifier)
@@ -167,7 +167,7 @@ async function example() {
   
   // Create a NALT Protocol document
   const naltDocument = {
-    spec_version: "nalt-protocol/1.1.1",
+    spec_version: "nalt-protocol/1.2.0",
     document_id: "550e8400-e29b-41d4-a716-446655440000",
     date: "2025-07-10",
     meta: {
