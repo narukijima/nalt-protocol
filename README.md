@@ -44,7 +44,7 @@ For more detailed specifications, please refer to:
 * [Full Specification (v1.2.0)](spec/v1.2.0.md)
 * [JSON Schema](schema/v1.2.0/schema.json)
 * [Migration Guide (v1.1.1 to v1.2.0)](docs/migration/v1.1.1_to_v1.2.0.md)
-* [Detailed Examples](examples/full_example.json)
+* [Detailed Examples](examples/v1.2.0/full_example.json)
 
 ## Validation
 
@@ -57,7 +57,7 @@ Use the provided tools to verify that your JSON files conform to the specificati
 pip install jsonschema
 
 # Run validator
-python tools/validator/python/validator.py examples/full_example.json
+python tools/validator/python/validator.py examples/v1.2.0/full_example.json
 ```
 
 ### Node.js
@@ -67,7 +67,7 @@ python tools/validator/python/validator.py examples/full_example.json
 npm install ajv ajv-formats
 
 # Run validator
-node tools/validator/nodejs/validator.js examples/full_example.json
+node tools/validator/nodejs/validator.js examples/v1.2.0/full_example.json
 ```
 
 ## Contributing
