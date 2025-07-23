@@ -1,0 +1,124 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "nalt-protocol/v1.2.0",
+  "description": "Schema for NALT Protocol v1.2.0 (slim-core)",
+  "type": "object",
+  "required": [
+    "spec_version",
+    "document_id",
+    "date",
+    "meta",
+    "entries"
+  ],
+  "properties": {
+    "spec_version": {
+      "description": "Identifier for the specification name and version.",
+      "type": "string",
+      "pattern": "^nalt-protocol/1\\.2\\.0$"
+    },
+    "document_id": {
+      "description": "A globally unique identifier for the document (UUIDv4 required).",
+      "type": "string",
+      "format": "uuid"
+    },
+    "date": {
+      "description": "The date the entries belong to, in YYYY-MM-DD format.",
+      "type": "string",
+      "format": "date",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "meta": {
+      "$ref": "#/$defs/metaObject"
+    },
+    "entries": {
+      "description": "An array of one or more Entry objects.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/entryObject"
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "metaObject": {
+      "type": "object",
+      "required": [
+        "language",
+        "timezone"
+      ],
+      "properties": {
+        "language": {
+          "description": "The default language of the document (ISO 639-1 code).",
+          "type": "string",
+          "pattern": "^[a-z]{2}$"
+        },
+        "timezone": {
+          "description": "The IANA timezone database name.",
+          "type": "string"
+        }
+      },
+      "patternProperties": {
+        "^x_": {}
+      },
+      "additionalProperties": true
+    },
+    "entryObject": {
+      "type": "object",
+      "required": [
+        "entry_id",
+        "type",
+        "mode",
+        "content_format",
+        "content"
+      ],
+      "properties": {
+        "entry_id": {
+          "description": "A unique identifier for the entry (UUIDv4 recommended).",
+          "type": "string"
+        },
+        "type": {
+          "description": "The type of content the entry represents.",
+          "type": "string",
+          "enum": [
+            "event",
+            "reflection",
+            "task",
+            "idea",
+            "log"
+          ]
+        },
+        "mode": {
+          "description": "The time of day when the event occurred.",
+          "type": "string",
+          "enum": [
+            "morning",
+            "afternoon",
+            "evening",
+            "night",
+            "none"
+          ]
+        },
+        "content_format": {
+          "description": "The format of the content string (MIME type).",
+          "type": "string",
+          "enum": [
+            "text/plain",
+            "text/markdown",
+            "text/html",
+            "application/json",
+            "text/org"
+          ]
+        },
+        "content": {
+          "description": "The original, unmodified user-provided text.",
+          "type": "string"
+        }
+      },
+      "patternProperties": {
+        "^x_": {}
+      },
+      "additionalProperties": true
+    }
+  }
+}

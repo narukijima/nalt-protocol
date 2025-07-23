@@ -3,7 +3,7 @@ const path = require('path');
 const Ajv = require('ajv');
 const addFormats = require('ajv-formats');
 
-function validateNALTProtocol(filePath, version = 'v1.1.1', checkWarnings = true) {
+function validateNALTProtocol(filePath, version = 'v1.2.0', checkWarnings = true) {
   const schemaPath = path.join(__dirname, `../../../schema/${version}/schema.json`);
 
   let schema, instance;
@@ -31,8 +31,8 @@ function validateNALTProtocol(filePath, version = 'v1.1.1', checkWarnings = true
   if (valid) {
     console.log(`✅ Validation successful: '${filePath}' conforms to NALT Protocol ${version}.`);
     
-    // Check for strongly recommended fields
-    if (checkWarnings && (version === 'v1.1.0' || version === 'v1.1.1')) {
+    // Check for strongly recommended fields (only for older versions)
+    if (checkWarnings && ['v1.1.0', 'v1.1.1'].includes(version)) {
       const warnings = checkStronglyRecommendedFields(instance);
       warnings.forEach(warning => {
         console.log(`⚠️  Warning: ${warning}`);
@@ -102,12 +102,12 @@ if (require.main === module) {
   const args = process.argv.slice(2);
   
   // Parse command line arguments
-  let filePath, version = 'v1.1.1', checkWarnings = true;
+  let filePath, version = 'v1.2.0', checkWarnings = true;
   
   if (args.length === 0 || args.includes('--help')) {
     console.log('Usage: node validator.js <path_to_json_file> [options]');
     console.log('Options:');
-    console.log('  --version <version>  Schema version (default: v1.1.1)');
+    console.log('  --version <version>  Schema version (default: v1.2.0)');
     console.log('  --no-warnings        Disable strongly recommended field warnings');
     process.exit(args.length === 0 ? 1 : 0);
   }
