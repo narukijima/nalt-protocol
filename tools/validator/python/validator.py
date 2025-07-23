@@ -5,13 +5,13 @@ import os
 import argparse
 from datetime import datetime
 
-def validate_nalt_protocol(file_path, version='v1.1.1', check_strongly_recommended=True):
+def validate_nalt_protocol(file_path, version='v1.2.0', check_strongly_recommended=True):
     """
     Validates a JSON file against the NALT Protocol schema.
     
     Args:
         file_path: Path to the JSON file to validate
-        version: Schema version to validate against (default: v1.1.1)
+        version: Schema version to validate against (default: v1.2.0)
         check_strongly_recommended: Whether to warn about missing strongly recommended fields
     """
     # Construct the absolute path to the schema file
@@ -39,8 +39,8 @@ def validate_nalt_protocol(file_path, version='v1.1.1', check_strongly_recommend
         jsonschema.validate(instance=instance, schema=schema)
         print(f"✅ Validation successful: '{file_path}' conforms to NALT Protocol {version}.")
         
-        # Check for strongly recommended fields
-        if check_strongly_recommended and (version == 'v1.1.0' or version == 'v1.1.1'):
+        # Check for strongly recommended fields (only for older versions)
+        if check_strongly_recommended and version in ['v1.1.0', 'v1.1.1']:
             warnings = check_strongly_recommended_fields(instance)
             for warning in warnings:
                 print(f"⚠️  Warning: {warning}")
@@ -99,7 +99,7 @@ def check_dates_consistency(instance):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Validate NALT Protocol JSON files')
     parser.add_argument('file', help='Path to JSON file to validate')
-    parser.add_argument('--version', default='v1.1.1', help='Schema version (default: v1.1.1)')
+    parser.add_argument('--version', default='v1.2.0', help='Schema version (default: v1.2.0)')
     parser.add_argument('--no-warnings', action='store_true', help='Disable strongly recommended field warnings')
     
     args = parser.parse_args()
